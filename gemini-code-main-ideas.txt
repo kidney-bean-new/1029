@@ -1,0 +1,34 @@
+你現在是一位專精於「現代前端動態多媒體與互動微動效」的資深前端工程師兼創意總監。
+請為我製作一個單一檔案（Single File HTML）的「Scrollytelling 滾動向量時間軸展示網頁」。
+
+本次以「狗狗氣味散步路徑」為題，結合 50mm 貼地晨光 AI 導演提示詞與 GSAP Scrollytelling。
+
+
+【技術規範與要求】
+1. 框架與函式庫：
+   - 使用純 HTML5 + 原生 JavaScript。
+   - 樣式採用 Tailwind CSS (由 CDN 引入)。
+   - 動效核心採用 GSAP 3、ScrollTrigger 與 ScrollToPlugin (由 cdnjs 引入)。
+2. 主題與內容情境：
+   - 主題：[狗狗社會化活動與多元氣味散步路徑]
+   - 分為 3 到 4 個主要階段（Phase 01 ~ Phase 04），每個階段需包含：階段標籤、核心標題、簡短說明文字。
+
+自然電影感晨光風（溫暖寫實質感）英文 Prompt：Slow-motion 50mm close-up pan shot at ground level. A Golden Retriever calmly sniffing wild clover and fallen oak leaves alongside a friendly Border Collie in soft focus background. Sun-dappled neighborhood botanical trail, morning mist hovering above damp soil, floating dust motes and pollen in the air. Warm golden hour backlighting, rich natural color grading, high dynamic range, shot on RED V-Raptor, cinematic 4K, 24fps.公式拆解與中文對照：[鏡頭運鏡與焦段]：Slow-motion 50mm close-up pan shot at ground level.（貼地視角 50mm 慢動作特寫平移鏡頭）   [主體描寫與具體動作]：A Golden Retriever calmly sniffing wild clover and fallen oak leaves alongside a friendly Border Collie in soft focus background.（黃金獵犬平靜地嗅聞野生酢漿草與橡樹落葉，背景淺景深處有一隻友善的邊境牧羊犬並行）   [環境與空間細節]：Sun-dappled neighborhood botanical trail, morning mist hovering above damp soil, floating dust motes and pollen in the air.（陽光斑駁的社區植物步道，濕潤土壤上方的晨霧，空氣中漂浮著微塵與花粉）   [光影、色彩與規格]：Warm golden hour backlighting, rich natural color grading, high dynamic range, shot on RED V-Raptor, cinematic 4K, 24fps.（溫暖魔幻時刻逆光、豐富自然調色、高動態範圍，RED V-Raptor 拍攝，電影感 4K，24幀） 
+
+「生物神經感測與氣味圖譜解析」的敘事脈絡：階段標籤核心標題簡短說明文字Phase 01 // SENSORY AWAKENING嗅覺雷達啟動：居家與玄關的氣味校準散步從踏出門前開始。透過穿戴胸背帶與熟悉門廊的環境氣味，引導狗狗進入穩定、好奇的探索狀態，降低外出初期的過度興奮，建立安全感基準線。Phase 02 // URBAN DECOMPRESSION城市緩衝帶：硬質鋪面與聽視覺脫敏進入街道與人行道，利用高頻率但低壓力的環境刺激（車流聲、行人、街角氣味標記），讓狗狗以自主嗅聞節奏取代緊張警戒，完成基礎環境減敏。Phase 03 // BOTANICAL OLFACTORY MATRIX多元氣味叢林：草地、土壤與有機費洛蒙解析轉入公園綠地與多層次植被路徑。濕潤土壤、落葉與其他犬隻留下的氣味訊息形成高維度資訊網，深度啟動大腦嗅球區，釋放壓力荷爾蒙並提升認知彈性。Phase 04 // SOCIAL SYNCHRONIZATION禮貌社交錨點：安定訊號與正向群體互動在氣味探索獲得充分滿足後，透過微彎曲的平行散步路徑（Arc Walking）與同伴進行非壓迫式接觸，自然展現嗅聞、側身等安定訊號，完成高品質社會化體驗。
+
+
+
+
+3. 視覺與版面架構：
+   - 包含 Hero 引言區塊、Pinned 核心展示視窗區塊、以及後續結論數據區塊。
+   - 背景採用深色科技質感（Slate-950 配色系），搭配螢光漸層發光（Glow filter）。
+   - 在中央繪製一條自定義平滑的 SVG 曲線導軌（包含靜態底軌與動態描邊軌）。
+
+4. 動效與互動機制：
+   - 使用 path.getTotalLength() 與 strokeDashoffset 實現隨滾輪畫線的效果。
+   - 釘選區塊設定 scrub: 1.0 確保平滑物理阻尼，並具有頂部進度條即時反映百分比。
+   - 節點雙向聯動：SVG 節點具備 Hover 放大回饋，點擊後平滑捲動至該階段對應高度。
+   - 提供 HUD 快捷切換按鈕，與當前進度同步高亮顯示。
+
+5. 交付格式：產出完整、無省略的單一 HTML 檔案，包含所有內聯 JS 與 CSS，可直接在瀏覽器開啟運行。

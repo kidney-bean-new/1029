@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>狗狗氣味散步路徑 // 50mm 貼地晨光 AI 導演 × GSAP 滾動向量時間軸</title>
+  <meta name="description" content="結合 50mm 貼地晨光電影級鏡頭語言與生物神經感測圖譜的 Scrollytelling 互動展示網頁。探索狗狗嗅覺散步路徑與高品質社會化歷程。">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+TC:wght@300;400;500;700;900&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            slate: {
+              850: '#0f172a',
+              900: '#0b1120',
+              950: '#050814'
+            },
+            amber: {
+              350: '#ffd066',
+              450: '#f59e0b',
+              550: '#d97706'
+            },
+            emerald: {
+              450: '#10b981',
+              550: '#059669'
+            },
+            cyan: {
+              450: '#06b6d4'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans TC"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+            cinematic: ['"Cinzel"', 'serif']
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'scanline': 'scanline 8s linear infinite',
+            'radar-spin': 'spin 5s linear infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            scanline: {
+              '0%': { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(100%)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- GSAP 3 & Plugins via cdnjs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050814;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #f59e0b;
+    }
+
+    /* Glow Filters & SVG effects */
+    .glow-amber {
+      filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.55));
+    }
+    .glow-emerald {
+      filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6));
+    }
+    .glow-cyan {
+      filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.6));
+    }
+    .glow-text-amber {
+      text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+    }
+
+    /* High-tech Grid Background */
+    .tech-grid-bg {
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+    }
+
+    /* Noise texture overlay */
+    .grain-overlay {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    }
+
+    /* Glassmorphism */
+    .glass-panel {
+      background: rgba(11, 17, 32, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-hover {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card-hover:hover {
+      background: rgba(15, 23, 42, 0.85);
+      border-color: rgba(245, 158, 11, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 158, 11, 0.15);
+    }
+
+    /* SVG Path Dashoffset default */
+    #scent-dynamic-path {
+      stroke-dasharray: 2000;
+      stroke-dashoffset: 2000;
+      transition: stroke 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-amber-500/30 selection:text-amber-300 tech-grid-bg relative min-h-screen overflow-x-hidden">
+
+  <!-- Grain Ambient Overlay -->
+  <div class="pointer-events-none fixed inset-0 z-50 grain-overlay"></div>
+
+  <!-- Top Real-time Progress Bar -->
+  <div id="top-progress-container" class="fixed top-0 left-0 right-0 z-50 h-1 bg-slate-900/80 backdrop-blur-sm">
+    <div id="top-progress-bar" class="h-full w-0 bg-gradient-to-r from-amber-400 via-emerald-400 to-cyan-400 transition-all duration-75 shadow-[0_0_12px_rgba(245,158,11,0.8)]"></div>
+  </div>
+
+  <!-- Global Header / HUD Telemetry Bar -->
+  <header class="fixed top-2 left-4 right-4 z-40 mx-auto max-w-7xl">
+    <nav class="glass-panel rounded-2xl px-5 py-3.5 flex items-center justify-between border border-white/10 shadow-2xl">
+      <!-- Brand & Mode -->
+      <div class="flex items-center space-x-3.5">
+        <div class="relative flex h-3.5 w-3.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500"></span>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-cinematic tracking-wider text-sm md:text-base font-bold text-amber-350">CANINE.NEURAL.LAB</span>
+            <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">50mm Cine-Scrolly</span>
+          </div>
+          <p class="text-[10px] text-slate-400 font-mono tracking-tight hidden sm:block">AI DIRECTORIAL PROMPT × GSAP VECTOR SCROLLTELLING</p>
+        </div>
+      </div>
+
+      <!-- Live Stage Tracker & HUD Indicators -->
+      <div class="hidden md:flex items-center space-x-6 text-xs font-mono">
+        <div class="flex items-center space-x-2 text-slate-400">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>CAMERA: <strong class="text-slate-200">50mm T1.5 @ 24fps</strong></span>
+        </div>
+        <div class="h-3 w-px bg-slate-800"></div>
+        <div class="flex items-center space-x-2 text-slate-400">
+          <span>ACTIVE STATE:</span>
+          <span id="nav-active-phase-label" class="text-amber-400 font-bold tracking-wider">PHASE 01 // SENSORY AWAKENING</span>
+        </div>
+        <div class="h-3 w-px bg-slate-800"></div>
+        <div class="text-slate-400">
+          PROGRESS: <span id="nav-progress-pct" class="text-emerald-400 font-bold">0%</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center space-x-2.5">
+        <!-- Audio Ambience Generator Button -->
+        <button id="ambient-audio-btn" title="切換自然晨霧音頻氛圍 (Web Audio 氛圍合成器)" class="px-3 py-1.5 rounded-xl text-xs font-mono bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-500/50 text-slate-300 transition-all flex items-center space-x-1.5 active:scale-95">
+          <svg id="audio-icon-off" class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke="#94a3b8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" stroke="#ef4444"/></svg>
+          <svg id="audio-icon-on" class="w-3.5 h-3.5 text-amber-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+          <span id="audio-btn-text" class="hidden sm:inline">晨光氛圍聲</span>
+        </button>
+
+        <!-- Jump to Scrollytelling -->
+        <a href="#scrolly-stage" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-sans tracking-tight shadow-md hover:shadow-amber-500/25 transition-all active:scale-95 flex items-center space-x-1">
+          <span>開始探索</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- HERO SECTION: 50mm 貼地晨光導演概念與主視覺 -->
+  <!-- ========================================== -->
+  <section class="relative pt-32 pb-24 md:pt-40 md:pb-32 px-4 max-w-7xl mx-auto overflow-hidden">
+    <!-- Ambient Background Glows -->
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-gradient-to-b from-amber-500/15 via-emerald-500/10 to-transparent blur-[120px] pointer-events-none -z-10"></div>
+    <div class="absolute bottom-10 right-10 w-80 h-80 bg-cyan-500/10 blur-[90px] pointer-events-none -z-10"></div>
+
+    <!-- Hero Title Block -->
+    <div class="text-center max-w-4xl mx-auto mb-12">
+      <!-- Tag Pill -->
+      <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-amber-500/30 text-amber-350 text-xs font-mono mb-6 shadow-inner">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+        <span class="tracking-wider uppercase">Cinematic 50mm Ground-Level Olfactory Journey</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.1] mb-6">
+        狗狗氣味散步路徑<br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-350 via-amber-200 to-emerald-400 glow-text-amber font-cinematic">
+          多元社會化與神經感測圖譜
+        </span>
+      </h1>
+
+      <p class="text-base sm:text-lg lg:text-xl text-slate-300 font-light leading-relaxed max-w-3xl mx-auto mb-8">
+        透過 <strong class="text-amber-300 font-medium">50mm 貼地晨光電影級鏡頭語言</strong> 與 <strong class="text-emerald-400 font-medium">生物神經氣味圖譜解析</strong>，揭開散步中每一步嗅聞背後的大腦認知活化、皮質醇調節與高品質同伴社會化交互。
+      </p>
+
+      <!-- Key Metadata HUD Pills -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto text-left font-mono text-xs mb-10">
+        <div class="glass-panel p-3 rounded-xl border border-white/5">
+          <div class="text-slate-500 uppercase text-[10px]">Cine Spec</div>
+          <div class="text-amber-300 font-bold">RED V-Raptor 8K</div>
+          <div class="text-slate-400 text-[10px]">50mm T1.5 @ 24fps</div>
+        </div>
+        <div class="glass-panel p-3 rounded-xl border border-white/5">
+          <div class="text-slate-500 uppercase text-[10px]">Natural Light</div>
+          <div class="text-amber-350 font-bold">Golden Hour 晨霧</div>
+          <div class="text-slate-400 text-[10px]">逆光懸浮花粉微塵</div>
+        </div>
+        <div class="glass-panel p-3 rounded-xl border border-white/5">
+          <div class="text-slate-500 uppercase text-[10px]">Sensory Organ</div>
+          <div class="text-emerald-400 font-bold">3億+ 嗅覺受器</div>
+          <div class="text-slate-400 text-[10px]">雙鼻孔獨立氣流採樣</div>
+        </div>
+        <div class="glass-panel p-3 rounded-xl border border-white/5">
+          <div class="text-slate-500 uppercase text-[10px]">Stress Relief</div>
+          <div class="text-cyan-400 font-bold">-42% 皮質醇</div>
+          <div class="text-slate-400 text-[10px]">嗅聞 20分 = 奔跑1小時</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cinematic Hero Frame: 50mm Ground-Level Render Display -->
+    <div class="relative max-w-5xl mx-auto group">
+      <!-- Outer Decorative Tech HUD Border -->
+      <div class="absolute -inset-1 bg-gradient-to-r from-amber-500/30 via-emerald-500/20 to-cyan-500/30 rounded-3xl blur-xl opacity-60 group-hover:opacity-80 transition duration-700"></div>
+
+      <div class="relative glass-panel rounded-3xl p-3 sm:p-5 border border-white/10 shadow-2xl overflow-hidden">
+        <!-- Top Camera HUD Bar -->
+        <div class="flex items-center justify-between pb-3 px-2 border-b border-white/5 text-[11px] font-mono text-slate-400 mb-3">
+          <div class="flex items-center space-x-3">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+            <span class="text-white font-bold tracking-widest">REC ● 4K 24FPS</span>
+            <span class="text-slate-500">|</span>
+            <span>SHUTTER: 1/48</span>
+            <span class="text-slate-500 hidden sm:inline">|</span>
+            <span class="hidden sm:inline">ISO: 800</span>
+            <span class="text-slate-500 hidden sm:inline">|</span>
+            <span class="text-amber-400 hidden sm:inline">LOG: REDCODE RAW</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-emerald-400 font-semibold">AF: GROUND LENS [0.35M]</span>
+            <span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300">50mm PRIME</span>
+          </div>
+        </div>
+
+        <!-- The 50mm Cinematic Generated Image with Interactive Overlays -->
+        <div class="relative rounded-2xl overflow-hidden aspect-video bg-slate-900">
+          <img src="./hero_cinematic.jpg" alt="50mm close-up ground level shot of Golden Retriever calmly sniffing clover with Border Collie in background" class="w-full h-full object-cover object-center transform group-hover:scale-[1.02] transition-transform duration-1000 ease-out">
+
+          <!-- Ground-Level Scanlines & Crosshair Overlays -->
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/20 pointer-events-none"></div>
+
+          <!-- Dynamic Camera Viewfinder Crosshairs -->
+          <div class="absolute inset-8 border border-white/15 pointer-events-none rounded-lg flex flex-col justify-between p-3">
+            <div class="flex justify-between text-[10px] font-mono text-white/50">
+              <span>[ + 0.0 EV ]</span>
+              <span>LUT: WARM_GOLDEN_HOUR_V2</span>
+            </div>
+            <!-- Center Focus Reticle right at the golden retriever's nose area -->
+            <div class="absolute left-[38%] top-[62%] -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer group/focus">
+              <div class="relative flex items-center justify-center w-14 h-14">
+                <div class="absolute inset-0 border-2 border-dashed border-amber-400/70 rounded-full animate-spin-slow"></div>
+                <div class="w-3 h-3 bg-amber-400 rounded-full shadow-[0_0_12px_#f59e0b]"></div>
+                <!-- Scent Pulse Waves -->
+                <div class="absolute inset-0 border border-emerald-400 rounded-full animate-ping opacity-40"></div>
+                <!-- Reticle Tag -->
+                <div class="absolute left-16 top-0 glass-panel px-3 py-1.5 rounded-lg border border-amber-400/40 text-[11px] font-mono text-amber-300 whitespace-nowrap shadow-xl">
+                  <div class="text-[9px] text-slate-400">OLFACTORY TARGET</div>
+                  <div class="font-bold flex items-center space-x-1">
+                    <span>Trifolium repens (野生白花酢漿草)</span>
+                  </div>
+                  <div class="text-[9px] text-emerald-400">氣味成分：草本萜類 + 濕土土臭素 (Geosmin)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Border Collie Secondary Reticle -->
+            <div class="absolute right-[33%] top-[48%] -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
+              <div class="relative flex items-center justify-center w-10 h-10 group/collie">
+                <div class="absolute inset-0 border border-cyan-400/50 rounded-full"></div>
+                <div class="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                <div class="absolute right-12 top-0 glass-panel px-2.5 py-1 rounded-lg border border-cyan-400/30 text-[10px] font-mono text-cyan-300 whitespace-nowrap hidden group-hover/collie:block">
+                  <div class="text-[8px] text-slate-400">COMPANION IN SOFT FOCUS</div>
+                  <div>友善邊境牧羊犬 (平行安定視角)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-end text-[10px] font-mono text-white/50">
+              <span class="text-amber-400 font-bold">50mm F/1.8 • SHOT ON RED V-RAPTOR</span>
+              <span>CINEMATIC 4K 24FPS</span>
+            </div>
+          </div>
+
+          <!-- Bottom Floating Director Prompt Snippet inside the Image -->
+          <div class="absolute bottom-4 left-4 right-4 glass-panel p-3 rounded-xl border border-white/10 hidden sm:flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center space-x-2 text-slate-300">
+              <span class="text-amber-400 font-bold">PROMPT //</span>
+              <span class="truncate max-w-xl text-slate-200">Slow-motion 50mm close-up pan shot at ground level. Golden Retriever calmly sniffing wild clover...</span>
+            </div>
+            <a href="#prompt-breakdown-section" class="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-350 border border-amber-500/40 text-[11px] whitespace-nowrap transition-colors">
+              查看鏡頭語彙解析 →
+            </a>
+          </div>
+        </div>
+
+        <!-- Image Footnote -->
+        <div class="flex items-center justify-between pt-3 px-2 text-xs text-slate-400">
+          <div class="flex items-center space-x-2">
+            <span class="text-amber-400">●</span>
+            <span>晨光魔幻時刻（Golden Hour）逆光與濕潤泥土微塵，建立極致沈浸感</span>
+          </div>
+          <div class="text-[11px] font-mono text-slate-500">
+            SCENE: SENSORY_BOTANICAL_TRAIL_01
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll Cue -->
+    <div class="mt-14 text-center">
+      <a href="#scrolly-stage" class="inline-flex flex-col items-center text-slate-400 hover:text-amber-350 transition-colors group">
+        <span class="text-xs font-mono tracking-widest uppercase mb-2">向下滾動進入氣味導軌</span>
+        <div class="w-6 h-10 rounded-full border-2 border-slate-700 group-hover:border-amber-400 flex items-start justify-center p-1 transition-colors">
+          <div class="w-1.5 h-2.5 bg-amber-400 rounded-full animate-bounce"></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- PINNED SCROLLYTELLING STAGE: 向量軌跡與生物感測核心展示視窗 -->
+  <!-- ======================================================== -->
+  <section id="scrolly-stage" class="relative w-full bg-slate-950 border-t border-b border-white/5">
+    
+    <!-- Outer scroll distance spacer (This creates the scroll height for GSAP to scrub) -->
+    <div id="scrolly-trigger" class="relative w-full h-[400vh]">
+
+      <!-- Pinned Cockpit Viewport (Sticky 100vh) -->
+      <div id="pinned-viewport" class="sticky top-0 w-full h-screen overflow-hidden flex flex-col justify-between py-16 px-4 md:px-8 max-w-7xl mx-auto">
+        
+        <!-- Pinned Section Header -->
+        <div class="flex items-center justify-between border-b border-white/5 pb-3 font-mono text-xs text-slate-400">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span class="text-slate-200 font-bold tracking-wider">OLFACTORY VECTOR SCROLLTELLING CORE</span>
+            <span class="text-slate-600">/</span>
+            <span id="current-phase-breadcrumb" class="text-amber-400 font-semibold">PHASE 01 // SENSORY AWAKENING</span>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="hidden sm:inline text-slate-500">PHYSICAL SCRUB: 1.0s DAMPED</span>
+            <span class="text-emerald-400 font-bold" id="scrub-percentage-display">PATH COMPLETION: 0%</span>
+          </div>
+        </div>
+
+        <!-- Main Cockpit: 3-Column Interactive Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center flex-1 my-auto">
+          
+          <!-- ======================================== -->
+          <!-- LEFT COLUMN: 生物神經感測與氣味儀表板 (Col 4) -->
+          <!-- ======================================== -->
+          <div class="hidden lg:flex flex-col space-y-4 lg:col-span-4">
+            
+            <!-- Sensor Cockpit Card -->
+            <div class="glass-panel p-5 rounded-2xl border border-white/10 relative overflow-hidden">
+              <div class="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></div>
+                  <h3 class="font-mono text-xs font-bold text-slate-200 tracking-wider">BIO-NEURAL TELEMETRY</h3>
+                </div>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">REAL-TIME LINK</span>
+              </div>
+
+              <!-- Metric 1: Sniff Frequency Waveform -->
+              <div class="mb-4">
+                <div class="flex justify-between items-center text-xs font-mono mb-1">
+                  <span class="text-slate-400">嗅探頻率 (SNIFF FREQ)</span>
+                  <span id="telemetry-sniff-freq" class="text-amber-400 font-bold">5.2 Hz</span>
+                </div>
+                <div class="h-10 bg-slate-900/90 rounded-lg p-1.5 flex items-end justify-between space-x-1 border border-slate-800">
+                  <div class="w-1 bg-amber-400/80 rounded-t h-4 transition-all duration-300"></div>
+                  <div class="w-1 bg-amber-400/80 rounded-t h-6 transition-all duration-300"></div>
+                  <div class="w-1 bg-amber-400/90 rounded-t h-8 transition-all duration-300"></div>
+                  <div class="w-1 bg-amber-400/70 rounded-t h-5 transition-all duration-300"></div>
+                  <div class="w-1 bg-amber-400/90 rounded-t h-9 transition-all duration-300"></div>
+                  <div class="w-1 bg-amber-400/80 rounded-t h-7 transition-all duration-300"></div>
+                  <div class="w-1 bg-amber-400/60 rounded-t h-4 transition-all duration-300"></div>
+                  <div class="w-1 bg-amber-400/90 rounded-t h-8 transition-all duration-300"></div>
+                  <div class="w-1 bg-amber-400/70 rounded-t h-6 transition-all duration-300"></div>
+                  <div class="w-1 bg-amber-400/80 rounded-t h-5 transition-all duration-300"></div>
+                </div>
+                <div class="text-[9px] font-mono text-slate-500 mt-1 flex justify-between">
+                  <span>BASELINE: 1-2 Hz (正常呼吸)</span>
+                  <span class="text-amber-400">SAMPLING: 4-7 Hz</span>
+                </div>
+              </div>
+
+              <!-- Metric 2: Olfactory Bulb Activation -->
+              <div class="mb-4">
+                <div class="flex justify-between items-center text-xs font-mono mb-1">
+                  <span class="text-slate-400">大腦嗅球神經活化度</span>
+                  <span id="telemetry-bulb-activation" class="text-emerald-400 font-bold">78%</span>
+                </div>
+                <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                  <div id="telemetry-bulb-bar" class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-full rounded-full transition-all duration-500" style="width: 78%"></div>
+                </div>
+              </div>
+
+              <!-- Metric 3: Stress Cortisol Index -->
+              <div class="mb-4">
+                <div class="flex justify-between items-center text-xs font-mono mb-1">
+                  <span class="text-slate-400">皮質醇壓力指數</span>
+                  <span id="telemetry-cortisol-index" class="text-cyan-400 font-bold">38 ng/mL (穩定)</span>
+                </div>
+                <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                  <div id="telemetry-cortisol-bar" class="bg-gradient-to-r from-cyan-400 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 45%"></div>
+                </div>
+              </div>
+
+              <!-- Chemical Spectral Detection Log -->
+              <div class="pt-3 border-t border-white/5">
+                <div class="text-[10px] font-mono text-slate-500 uppercase mb-2">即時氣味分子光譜鎖定</div>
+                <div id="telemetry-chemical-tags" class="flex flex-wrap gap-1.5 text-[10px] font-mono">
+                  <span class="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300">Geosmin (土臭素)</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">Humulene (草本萜)</span>
+                  <span class="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-300">Pheromone Mark</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mini Radar / Compass Widget -->
+            <div class="glass-panel p-4 rounded-2xl border border-white/10 flex items-center space-x-4">
+              <div class="relative w-16 h-16 rounded-full border border-slate-700 bg-slate-900/80 flex items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-emerald-500/20 to-transparent animate-radar-spin origin-bottom-right"></div>
+                <div class="w-8 h-8 rounded-full border border-dashed border-emerald-400/40"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+              </div>
+              <div class="font-mono text-xs">
+                <div class="text-slate-400 text-[10px]">散步模式 (MODE)</div>
+                <div id="telemetry-walk-mode" class="text-white font-bold">ARC WALKING (弧形減壓)</div>
+                <div class="text-[10px] text-emerald-400">安定訊號已觸發 • 社會化同步中</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ======================================== -->
+          <!-- CENTER COLUMN: SVG 向量平滑曲線導軌 (Col 4) -->
+          <!-- ======================================== -->
+          <div class="col-span-1 lg:col-span-4 flex flex-col items-center justify-center relative h-[380px] sm:h-[480px]">
+            
+            <!-- SVG Canvas Container -->
+            <div class="relative w-full h-full max-w-[340px] flex items-center justify-center">
+              
+              <!-- Subtle Background Glow Behind Vector -->
+              <div class="absolute inset-0 bg-gradient-to-b from-amber-500/10 via-emerald-500/10 to-cyan-500/10 blur-2xl rounded-full pointer-events-none"></div>
+
+              <!-- Main Interactive SVG Track -->
+              <svg id="scent-svg-track" viewBox="0 0 300 800" class="w-full h-full overflow-visible drop-shadow-2xl">
+                <defs>
+                  <!-- Glow Filter for Dynamic Trail -->
+                  <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="6" result="blur1" />
+                    <feGaussianBlur stdDeviation="14" result="blur2" />
+                    <feMerge>
+                      <feMergeNode in="blur2" />
+                      <feMergeNode in="blur1" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+
+                  <!-- Scent Gradient along the Path -->
+                  <linearGradient id="scentGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#f59e0b" />
+                    <stop offset="35%" stop-color="#eab308" />
+                    <stop offset="70%" stop-color="#10b981" />
+                    <stop offset="100%" stop-color="#06b6d4" />
+                  </linearGradient>
+
+                  <!-- Particle pattern / dot grid for path -->
+                  <pattern id="dotPattern" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+                    <circle cx="2" cy="2" r="1" fill="#334155" opacity="0.3" />
+                  </pattern>
+                </defs>
+
+                <!-- 1. Static Base Guide Track (Dashed dim track) -->
+                <path 
+                  d="M 150 40 C 70 140, 50 220, 150 280 C 250 340, 260 440, 150 500 C 40 560, 50 660, 150 720 C 200 750, 190 770, 150 780" 
+                  fill="none" 
+                  stroke="#1e293b" 
+                  stroke-width="8" 
+                  stroke-linecap="round"
+                />
+                <path 
+                  d="M 150 40 C 70 140, 50 220, 150 280 C 250 340, 260 440, 150 500 C 40 560, 50 660, 150 720 C 200 750, 190 770, 150 780" 
+                  fill="none" 
+                  stroke="#475569" 
+                  stroke-width="2" 
+                  stroke-dasharray="6 6" 
+                  stroke-linecap="round" 
+                  opacity="0.4"
+                />
+
+                <!-- 2. Dynamic Scrubbed Glow Path (Animated by GSAP strokeDashoffset) -->
+                <path 
+                  id="scent-dynamic-path"
+                  d="M 150 40 C 70 140, 50 220, 150 280 C 250 340, 260 440, 150 500 C 40 560, 50 660, 150 720 C 200 750, 190 770, 150 780" 
+                  fill="none" 
+                  stroke="url(#scentGradient)" 
+                  stroke-width="6" 
+                  stroke-linecap="round" 
+                  filter="url(#neon-glow)"
+                />
+
+                <!-- 3. Animated Scent Tracer Particle (Slides with scroll progress) -->
+                <g id="path-tracer-group" transform="translate(150, 40)">
+                  <!-- Outer ripple wave -->
+                  <circle r="18" fill="none" stroke="#f59e0b" stroke-width="1.5" class="animate-ping opacity-60" />
+                  <circle r="10" fill="#f59e0b" opacity="0.4" />
+                  <circle r="6" fill="#ffffff" filter="url(#neon-glow)" />
+                </g>
+
+                <!-- 4. Interactive Phase Nodes (Clickable & Hover-responsive) -->
+                <!-- Node 01: Sensory Awakening (Top) -->
+                <g id="svg-node-1" class="cursor-pointer group" onclick="jumpToPhase(1)">
+                  <circle id="node-outer-1" cx="150" cy="40" r="14" fill="#0f172a" stroke="#f59e0b" stroke-width="3" class="transition-all duration-300 group-hover:r-18" />
+                  <circle id="node-inner-1" cx="150" cy="40" r="6" fill="#f59e0b" />
+                  <text x="180" y="44" fill="#f59e0b" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="bold">01 // AWAKEN</text>
+                </g>
+
+                <!-- Node 02: Urban Decompression (~30%) -->
+                <g id="svg-node-2" class="cursor-pointer group" onclick="jumpToPhase(2)">
+                  <circle id="node-outer-2" cx="160" cy="285" r="14" fill="#0f172a" stroke="#64748b" stroke-width="3" class="transition-all duration-300 group-hover:r-18" />
+                  <circle id="node-inner-2" cx="160" cy="285" r="6" fill="#64748b" />
+                  <text x="190" y="290" fill="#cbd5e1" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="bold">02 // BUFFER</text>
+                </g>
+
+                <!-- Node 03: Botanical Matrix (~65%) -->
+                <g id="svg-node-3" class="cursor-pointer group" onclick="jumpToPhase(3)">
+                  <circle id="node-outer-3" cx="140" cy="510" r="14" fill="#0f172a" stroke="#64748b" stroke-width="3" class="transition-all duration-300 group-hover:r-18" />
+                  <circle id="node-inner-3" cx="140" cy="510" r="6" fill="#64748b" />
+                  <text x="170" y="515" fill="#cbd5e1" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="bold">03 // BOTANICAL</text>
+                </g>
+
+                <!-- Node 04: Social Synchronization (~95%) -->
+                <g id="svg-node-4" class="cursor-pointer group" onclick="jumpToPhase(4)">
+                  <circle id="node-outer-4" cx="150" cy="775" r="14" fill="#0f172a" stroke="#64748b" stroke-width="3" class="transition-all duration-300 group-hover:r-18" />
+                  <circle id="node-inner-4" cx="150" cy="775" r="6" fill="#64748b" />
+                  <text x="180" y="780" fill="#cbd5e1" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="bold">04 // SOCIAL</text>
+                </g>
+              </svg>
+
+              <!-- Node Interaction Tooltip -->
+              <div class="absolute bottom-2 text-center text-[10px] font-mono text-slate-500">
+                點擊節點可直接平滑跳轉至該階段
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ======================================== -->
+          <!-- RIGHT COLUMN: 階段標籤與核心敘事卡 (Col 4) -->
+          <!-- ======================================== -->
+          <div class="col-span-1 lg:col-span-4 relative h-[360px] sm:h-[420px] flex items-center">
+            
+            <!-- Dynamic Phase Cards Stack (Controlled by GSAP Scrub) -->
+            <div class="relative w-full h-full flex items-center">
+
+              <!-- ===================================== -->
+              <!-- CARD 01: SENSORY AWAKENING -->
+              <!-- ===================================== -->
+              <div id="phase-card-1" class="phase-card absolute inset-0 glass-panel p-6 sm:p-7 rounded-3xl border border-amber-500/30 flex flex-col justify-between shadow-2xl opacity-100 scale-100 z-10 transition-all duration-500">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-500/15 text-amber-350 border border-amber-500/30">
+                      PHASE 01 // SENSORY AWAKENING
+                    </span>
+                    <span class="text-xs font-mono text-slate-500">01 / 04</span>
+                  </div>
+
+                  <h3 class="text-xl sm:text-2xl font-black text-white mb-3 tracking-tight">
+                    嗅覺雷達啟動：<br>
+                    <span class="text-amber-350">居家與玄關的氣味校準</span>
+                  </h3>
+
+                  <p class="text-sm text-slate-300 leading-relaxed font-light mb-4">
+                    散步從踏出門前開始。透過穿戴胸背帶與熟悉門廊的環境氣味，引導狗狗進入穩定、好奇的探索狀態，降低外出初期的過度興奮，建立安全感基準線。
+                  </p>
+                </div>
+
+                <!-- Bio / Director Insight Box -->
+                <div class="space-y-2 pt-3 border-t border-white/10 font-mono text-xs">
+                  <div class="flex items-start space-x-2 text-slate-300">
+                    <span class="text-amber-400 font-bold">● 鏡頭焦段：</span>
+                    <span>50mm 淺景深聚焦胸背帶金屬扣環與鼻尖微顫動</span>
+                  </div>
+                  <div class="flex items-start space-x-2 text-slate-300">
+                    <span class="text-emerald-400 font-bold">● 生物信號：</span>
+                    <span>心率從出門前 120bpm 平穩收斂至 85bpm 探求態</span>
+                  </div>
+                </div>
+
+                <!-- Footer Tip -->
+                <div class="mt-2 text-[11px] text-amber-400/80 bg-amber-500/5 px-3 py-2 rounded-xl border border-amber-500/20">
+                  💡 專家建議：穿戴後在玄關靜候 30 秒，讓嗅聞取代衝門拉扯。
+                </div>
+              </div>
+
+              <!-- ===================================== -->
+              <!-- CARD 02: URBAN DECOMPRESSION -->
+              <!-- ===================================== -->
+              <div id="phase-card-2" class="phase-card absolute inset-0 glass-panel p-6 sm:p-7 rounded-3xl border border-cyan-500/30 flex flex-col justify-between shadow-2xl opacity-0 scale-95 pointer-events-none z-0 transition-all duration-500">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-cyan-500/15 text-cyan-350 border border-cyan-500/30">
+                      PHASE 02 // URBAN DECOMPRESSION
+                    </span>
+                    <span class="text-xs font-mono text-slate-500">02 / 04</span>
+                  </div>
+
+                  <h3 class="text-xl sm:text-2xl font-black text-white mb-3 tracking-tight">
+                    城市緩衝帶：<br>
+                    <span class="text-cyan-350">硬質鋪面與聽視覺脫敏</span>
+                  </h3>
+
+                  <p class="text-sm text-slate-300 leading-relaxed font-light mb-4">
+                    進入街道與人行道，利用高頻率但低壓力的環境刺激（車流聲、行人、街角氣味標記），讓狗狗以自主嗅聞節奏取代緊張警戒，完成基礎環境減敏。
+                  </p>
+                </div>
+
+                <!-- Bio / Director Insight Box -->
+                <div class="space-y-2 pt-3 border-t border-white/10 font-mono text-xs">
+                  <div class="flex items-start space-x-2 text-slate-300">
+                    <span class="text-cyan-400 font-bold">● 鏡頭焦段：</span>
+                    <span>貼地 50mm 慢速平移，柏油路面微塵與遠處行人柔焦光斑</span>
+                  </div>
+                  <div class="flex items-start space-x-2 text-slate-300">
+                    <span class="text-emerald-400 font-bold">● 生物信號：</span>
+                    <span>自主嗅探 4.8 Hz，聽覺警報主動過濾硬質噪音</span>
+                  </div>
+                </div>
+
+                <!-- Footer Tip -->
+                <div class="mt-2 text-[11px] text-cyan-400/80 bg-cyan-500/5 px-3 py-2 rounded-xl border border-cyan-500/20">
+                  💡 專家建議：街角氣味點允許嗅聞 5~10 秒，讓資訊完整解碼。
+                </div>
+              </div>
+
+              <!-- ===================================== -->
+              <!-- CARD 03: BOTANICAL OLFACTORY MATRIX -->
+              <!-- ===================================== -->
+              <div id="phase-card-3" class="phase-card absolute inset-0 glass-panel p-6 sm:p-7 rounded-3xl border border-emerald-500/30 flex flex-col justify-between shadow-2xl opacity-0 scale-95 pointer-events-none z-0 transition-all duration-500">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-350 border border-emerald-500/30">
+                      PHASE 03 // BOTANICAL MATRIX
+                    </span>
+                    <span class="text-xs font-mono text-slate-500">03 / 04</span>
+                  </div>
+
+                  <h3 class="text-xl sm:text-2xl font-black text-white mb-3 tracking-tight">
+                    多元氣味叢林：<br>
+                    <span class="text-emerald-350">草地、土壤與有機費洛蒙解析</span>
+                  </h3>
+
+                  <p class="text-sm text-slate-300 leading-relaxed font-light mb-4">
+                    轉入公園綠地與多層次植被路徑。濕潤土壤、落葉與其他犬隻留下的氣味訊息形成高維度資訊網，深度啟動大腦嗅球區，釋放壓力荷爾蒙並提升認知彈性。
+                  </p>
+                </div>
+
+                <!-- Bio / Director Insight Box -->
+                <div class="space-y-2 pt-3 border-t border-white/10 font-mono text-xs">
+                  <div class="flex items-start space-x-2 text-slate-300">
+                    <span class="text-emerald-400 font-bold">● 鏡頭焦段：</span>
+                    <span>特寫黃金獵犬在陽光穿透草地嗅聞酢漿草，晨霧漂浮</span>
+                  </div>
+                  <div class="flex items-start space-x-2 text-slate-300">
+                    <span class="text-amber-400 font-bold">● 生物信號：</span>
+                    <span>嗅球神經活化度 94%，多巴胺平穩分泌，皮質醇顯著下降</span>
+                  </div>
+                </div>
+
+                <!-- Footer Tip -->
+                <div class="mt-2 text-[11px] text-emerald-400/80 bg-emerald-500/5 px-3 py-2 rounded-xl border border-emerald-500/20">
+                  💡 專家建議：嗅聞 20 分鐘腦力消耗相當於奔跑 1 小時，放慢步調主導。
+                </div>
+              </div>
+
+              <!-- ===================================== -->
+              <!-- CARD 04: SOCIAL SYNCHRONIZATION -->
+              <!-- ===================================== -->
+              <div id="phase-card-4" class="phase-card absolute inset-0 glass-panel p-6 sm:p-7 rounded-3xl border border-amber-400/40 flex flex-col justify-between shadow-2xl opacity-0 scale-95 pointer-events-none z-0 transition-all duration-500">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                      PHASE 04 // SOCIAL SYNCHRONIZATION
+                    </span>
+                    <span class="text-xs font-mono text-slate-500">04 / 04</span>
+                  </div>
+
+                  <h3 class="text-xl sm:text-2xl font-black text-white mb-3 tracking-tight">
+                    禮貌社交錨點：<br>
+                    <span class="text-amber-350">安定訊號與正向群體互動</span>
+                  </h3>
+
+                  <p class="text-sm text-slate-300 leading-relaxed font-light mb-4">
+                    在氣味探索獲得充分滿足後，透過微彎曲的平行散步路徑（Arc Walking）與同伴進行非壓迫式接觸，自然展現嗅聞、側身等安定訊號，完成高品質社會化體驗。
+                  </p>
+                </div>
+
+                <!-- Bio / Director Insight Box -->
+                <div class="space-y-2 pt-3 border-t border-white/10 font-mono text-xs">
+                  <div class="flex items-start space-x-2 text-slate-300">
+                    <span class="text-amber-400 font-bold">● 鏡頭焦段：</span>
+                    <span>雙犬深景深並行，邊境牧羊犬在溫暖柔焦背景中側身凝望</span>
+                  </div>
+                  <div class="flex items-start space-x-2 text-slate-300">
+                    <span class="text-cyan-400 font-bold">● 生物信號：</span>
+                    <span>弧形路徑避免直視對峙，心率同調率 88%，安定訊號自然釋放</span>
+                  </div>
+                </div>
+
+                <!-- Footer Tip -->
+                <div class="mt-2 text-[11px] text-amber-350 bg-amber-500/10 px-3 py-2 rounded-xl border border-amber-500/30">
+                  💡 專家建議：平行弧線散步（Parallel Arc）能化解緊張，是最高雅的犬類社交禮儀。
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Pinned Section Bottom: Interactive HUD Floating Dock -->
+        <div class="pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
+          <!-- Dock Buttons -->
+          <div class="flex items-center space-x-1.5 sm:space-x-3 overflow-x-auto py-1">
+            <button onclick="jumpToPhase(1)" id="hud-btn-1" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 transition-all font-bold">
+              01 嗅覺啟動
+            </button>
+            <button onclick="jumpToPhase(2)" id="hud-btn-2" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition-all">
+              02 城市緩衝
+            </button>
+            <button onclick="jumpToPhase(3)" id="hud-btn-3" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition-all">
+              03 氣味叢林
+            </button>
+            <button onclick="jumpToPhase(4)" id="hud-btn-4" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition-all">
+              04 禮貌社交
+            </button>
+          </div>
+
+          <div class="text-[11px] text-slate-500 flex items-center space-x-2">
+            <span>SCRUB CONTROL: MOUSE WHEEL / TOUCH</span>
+            <span class="text-amber-400">● 1.0s SMOOTH EASE</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- POST-PINNED CONCLUSION & AI DIRECTOR PROMPT MASTER CARD -->
+  <!-- ======================================================== -->
+  <section id="prompt-breakdown-section" class="py-24 px-4 max-w-7xl mx-auto">
+    
+    <!-- Section Title: 50mm 電影級鏡頭語彙解析 -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-900 border border-amber-500/30 text-amber-350 text-xs font-mono mb-4">
+        <span>CINEMATIC VISUAL LANGUAGE</span>
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+        50mm 貼地晨光 <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-350 to-emerald-400">電影級鏡頭語彙解析</span>
+      </h2>
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+        從貼地視角運鏡、主體動作、環境微塵到魔幻時刻光影規格，打造真實自然的極致沈浸感。
+      </p>
+    </div>
+
+
+    <!-- 4 Formula Breakdown Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
+      
+      <!-- Part 1: 鏡頭運鏡與焦段 -->
+      <div class="glass-panel p-6 rounded-2xl border border-white/5 glass-card-hover">
+        <div class="flex items-center space-x-3 mb-3">
+          <span class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 font-mono text-xs font-bold flex items-center justify-center border border-amber-500/30">01</span>
+          <h4 class="font-bold text-white text-base">［鏡頭運鏡與焦段］</h4>
+        </div>
+        <div class="font-mono text-xs text-amber-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800 mb-3">
+          Slow-motion 50mm close-up pan shot at ground level.
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          <strong>中文解析：</strong>貼地視角 50mm 慢動作特寫平移鏡頭。藉由貼近狗狗視線的低角度，賦予觀眾第一人稱探索的沈浸感；50mm 接近人眼自然透視，慢動作平移使畫面充滿沉穩呼吸感。
+        </p>
+      </div>
+
+      <!-- Part 2: 主體描寫與具體動作 -->
+      <div class="glass-panel p-6 rounded-2xl border border-white/5 glass-card-hover">
+        <div class="flex items-center space-x-3 mb-3">
+          <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-mono text-xs font-bold flex items-center justify-center border border-emerald-500/30">02</span>
+          <h4 class="font-bold text-white text-base">［主體描寫與具體動作］</h4>
+        </div>
+        <div class="font-mono text-xs text-emerald-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800 mb-3">
+          A Golden Retriever calmly sniffing wild clover and fallen oak leaves alongside a friendly Border Collie in soft focus background.
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          <strong>中文解析：</strong>黃金獵犬平靜地嗅聞野生酢漿草與橡樹落葉，背景淺景深處有一隻友善的邊境牧羊犬並行。建立前後景深對照，體現嗅聞滿足後的和諧平行社交。
+        </p>
+      </div>
+
+      <!-- Part 3: 環境與空間細節 -->
+      <div class="glass-panel p-6 rounded-2xl border border-white/5 glass-card-hover">
+        <div class="flex items-center space-x-3 mb-3">
+          <span class="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 font-mono text-xs font-bold flex items-center justify-center border border-cyan-500/30">03</span>
+          <h4 class="font-bold text-white text-base">［環境與空間細節］</h4>
+        </div>
+        <div class="font-mono text-xs text-cyan-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800 mb-3">
+          Sun-dappled neighborhood botanical trail, morning mist hovering above damp soil, floating dust motes and pollen in the air.
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          <strong>中文解析：</strong>陽光斑駁的社區植物步道，濕潤土壤上方的晨霧，空氣中漂浮著微塵與花粉。細節描寫賦予氣味分子可視化的光影載體，增添自然生態厚度。
+        </p>
+      </div>
+
+      <!-- Part 4: 光影、色彩與規格 -->
+      <div class="glass-panel p-6 rounded-2xl border border-white/5 glass-card-hover">
+        <div class="flex items-center space-x-3 mb-3">
+          <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 font-mono text-xs font-bold flex items-center justify-center border border-purple-500/30">04</span>
+          <h4 class="font-bold text-white text-base">［光影、色彩與規格］</h4>
+        </div>
+        <div class="font-mono text-xs text-purple-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800 mb-3">
+          Warm golden hour backlighting, rich natural color grading, high dynamic range, shot on RED V-Raptor, cinematic 4K, 24fps.
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          <strong>中文解析：</strong>溫暖魔幻時刻逆光、豐富自然調色、高動態範圍，RED V-Raptor 拍攝，電影感 4K，24幀。鎖定頂級電影機規格與黃金邊緣輪廓光，消除數位廉價感。
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- INTERACTIVE CHEMICAL SCENT EXPLORER: 氣味分子光譜實驗室 -->
+    <!-- ======================================================== -->
+    <div class="glass-panel p-6 sm:p-10 rounded-3xl border border-white/10 mb-20">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <span class="text-xs font-mono text-emerald-400 uppercase tracking-wider">INTERACTIVE OLFACTORY LABORATORY</span>
+          <h3 class="text-2xl sm:text-3xl font-black text-white mt-1">氣味分子對大腦神經效應解析</h3>
+        </div>
+        <div class="text-xs font-mono text-slate-400">點擊下方分子查看狗狗生理響應</div>
+      </div>
+
+      <!-- Interactive Chemical Selector Tabs -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <button onclick="selectMolecule('geosmin')" id="mol-btn-geosmin" class="mol-btn p-3 rounded-xl border border-amber-500/40 bg-amber-500/15 text-amber-300 font-mono text-xs font-bold text-left transition-all">
+          <div>Geosmin</div>
+          <div class="text-[10px] text-slate-400 font-normal">濕土土臭素</div>
+        </button>
+        <button onclick="selectMolecule('terpene')" id="mol-btn-terpene" class="mol-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 font-mono text-xs font-bold text-left transition-all">
+          <div>Terpenes</div>
+          <div class="text-[10px] text-slate-400 font-normal">草本酢漿草萜</div>
+        </button>
+        <button onclick="selectMolecule('pheromone')" id="mol-btn-pheromone" class="mol-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 font-mono text-xs font-bold text-left transition-all">
+          <div>Pheromones</div>
+          <div class="text-[10px] text-slate-400 font-normal">同伴犬類費洛蒙</div>
+        </button>
+        <button onclick="selectMolecule('asphalt')" id="mol-btn-asphalt" class="mol-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 font-mono text-xs font-bold text-left transition-all">
+          <div>Urban VOCs</div>
+          <div class="text-[10px] text-slate-400 font-normal">瀝青與車流痕跡</div>
+        </button>
+      </div>
+
+      <!-- Molecule Display Board -->
+      <div id="molecule-display-board" class="bg-slate-900/80 p-6 rounded-2xl border border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+        <div>
+          <span class="text-slate-500 text-[10px] uppercase">化學式與結構</span>
+          <h4 id="mol-formula" class="text-xl font-bold text-amber-400 mt-1">C₁₂H₂₂O (反式-1,10-二甲基-反式-9-萘酚)</h4>
+          <p id="mol-source" class="text-slate-300 mt-2 text-xs font-sans">來源：放線菌分泌物，散佈於晨霧濕潤之泥土與落葉堆中。</p>
+        </div>
+        <div>
+          <span class="text-slate-500 text-[10px] uppercase">犬類大腦共振機制</span>
+          <h4 id="mol-resonance" class="text-xl font-bold text-emerald-400 mt-1">嗅球後背區（Posterior Bulb）</h4>
+          <p id="mol-mechanism" class="text-slate-300 mt-2 text-xs font-sans">機制：極低濃度（0.001 ppb）即可觸發前腦基底核，大幅抑制交感神經。</p>
+        </div>
+        <div>
+          <span class="text-slate-500 text-[10px] uppercase">散步行為反饋</span>
+          <h4 id="mol-behavior" class="text-xl font-bold text-cyan-400 mt-1">深度嗅探與地表打滾</h4>
+          <p id="mol-impact" class="text-slate-300 mt-2 text-xs font-sans">行為：引導犬隻放緩腳步，進入全神貫注的心流狀態（Flow State）。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quantitative Scientific Stats Matrix -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="glass-panel p-6 rounded-2xl border border-white/5 text-center">
+        <div class="text-3xl sm:text-4xl font-black text-amber-350 font-mono mb-1">300M+</div>
+        <div class="text-xs text-slate-400">嗅覺感受器受體</div>
+        <div class="text-[10px] text-slate-500 mt-1">人類僅約 500 萬（60倍吞吐）</div>
+      </div>
+      <div class="glass-panel p-6 rounded-2xl border border-white/5 text-center">
+        <div class="text-3xl sm:text-4xl font-black text-emerald-400 font-mono mb-1">-42.8%</div>
+        <div class="text-xs text-slate-400">皮質醇（壓力荷爾蒙）</div>
+        <div class="text-[10px] text-slate-500 mt-1">15分鐘自由嗅聞實測下降</div>
+      </div>
+      <div class="glass-panel p-6 rounded-2xl border border-white/5 text-center">
+        <div class="text-3xl sm:text-4xl font-black text-cyan-400 font-mono mb-1">98.4%</div>
+        <div class="text-xs text-slate-400">安定訊號自然展現率</div>
+        <div class="text-[10px] text-slate-500 mt-1">平行弧線（Arc Walk）接觸</div>
+      </div>
+      <div class="glass-panel p-6 rounded-2xl border border-white/5 text-center">
+        <div class="text-3xl sm:text-4xl font-black text-purple-400 font-mono mb-1">4.9 / 5.0</div>
+        <div class="text-xs text-slate-400">認知富化綜合指數</div>
+        <div class="text-[10px] text-slate-500 mt-1">多層次植物與微氣候步道</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- FOOTER -->
+  <!-- ======================================================== -->
+  <footer class="border-t border-white/10 py-12 px-4 bg-slate-950/80 font-mono text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center space-x-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+        <span class="text-slate-300 font-bold tracking-wider">CANINE.NEURAL.LAB // 50mm KINEMATICS</span>
+        <span class="text-slate-600">|</span>
+        <span>SINGLE-FILE ARCHITECTURE</span>
+      </div>
+      <div class="flex items-center space-x-6 text-slate-400">
+        <span>GSAP 3 SCROLLTRIGGER ENGINE</span>
+        <span>TAILWIND CSS CDN</span>
+        <a href="#" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;" class="text-amber-400 hover:underline">返回頂部 ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT: GSAP SCROLLTELLING, WEB AUDIO, & DYNAMICS   -->
+  <!-- ======================================================== -->
+  <script>
+    // Register GSAP plugins
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+    // Global references
+    const scentPath = document.getElementById('scent-dynamic-path');
+    const pathTracer = document.getElementById('path-tracer-group');
+    const topProgressBar = document.getElementById('top-progress-bar');
+    const navProgressPct = document.getElementById('nav-progress-pct');
+    const scrubPercentageDisplay = document.getElementById('scrub-percentage-display');
+    const navActivePhaseLabel = document.getElementById('nav-active-phase-label');
+    const currentPhaseBreadcrumb = document.getElementById('current-phase-breadcrumb');
+
+    // Telemetry DOM elements
+    const telemSniff = document.getElementById('telemetry-sniff-freq');
+    const telemBulb = document.getElementById('telemetry-bulb-activation');
+    const telemBulbBar = document.getElementById('telemetry-bulb-bar');
+    const telemCortisol = document.getElementById('telemetry-cortisol-index');
+    const telemCortisolBar = document.getElementById('telemetry-cortisol-bar');
+    const telemChemical = document.getElementById('telemetry-chemical-tags');
+    const telemWalkMode = document.getElementById('telemetry-walk-mode');
+
+    // Path geometry initialization
+    let pathLength = 0;
+    if (scentPath) {
+      pathLength = scentPath.getTotalLength();
+      scentPath.style.strokeDasharray = pathLength;
+      scentPath.style.strokeDashoffset = pathLength;
+    }
+
+    // Phase telemetry profiles
+    const phaseTelemetryData = [
+      {
+        phase: 1,
+        label: "PHASE 01 // SENSORY AWAKENING",
+        sniff: "3.8 Hz",
+        bulb: "45%",
+        cortisol: "62 ng/mL (基線校準)",
+        cortisolBar: "65%",
+        chemicals: ['Ambient Household', 'Leash Nylon Pheromone', 'Porch Micro-Dust'],
+        mode: "CALIBRATION (玄關校準模式)"
+      },
+      {
+        phase: 2,
+        label: "PHASE 02 // URBAN DECOMPRESSION",
+        sniff: "5.4 Hz",
+        bulb: "68%",
+        cortisol: "48 ng/mL (減敏中)",
+        cortisolBar: "50%",
+        chemicals: ['Asphalt VOCs', 'Lamppost Mark #42', 'Pedestrian Footwear Trail'],
+        mode: "DESENSITIZATION (城市脫敏模式)"
+      },
+      {
+        phase: 3,
+        label: "PHASE 03 // BOTANICAL MATRIX",
+        sniff: "6.8 Hz",
+        bulb: "95%",
+        cortisol: "24 ng/mL (深度放鬆)",
+        cortisolBar: "25%",
+        chemicals: ['Geosmin (土臭素)', 'Trifolium Terpenes', 'Canine Pheromone Alpha'],
+        mode: "FLOW STATE (氣味心流模式)"
+      },
+      {
+        phase: 4,
+        label: "PHASE 04 // SOCIAL SYNCHRONIZATION",
+        sniff: "4.5 Hz",
+        bulb: "88%",
+        cortisol: "18 ng/mL (安定滿足)",
+        cortisolBar: "18%",
+        chemicals: ['Border Collie Biometrics', 'Gentle Saliva Signal', 'Grass Nitrogen'],
+        mode: "ARC WALKING (弧形社交同步)"
+      }
+    ];
+
+    // Master ScrollTrigger for the Pinned Timeline
+    let scrollyTriggerInstance = null;
+
+    function initScrollytelling() {
+      // Refresh path length in case of resize
+      if (scentPath) {
+        pathLength = scentPath.getTotalLength();
+        scentPath.style.strokeDasharray = pathLength;
+      }
+
+      scrollyTriggerInstance = ScrollTrigger.create({
+        trigger: "#scrolly-trigger",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1.0, // Smooth physical damping
+        onUpdate: (self) => {
+          const progress = self.progress; // 0.0 to 1.0
+          const pct = Math.round(progress * 100);
+
+          // 1. Top progress bar
+          if (topProgressBar) topProgressBar.style.width = `${pct}%`;
+          if (navProgressPct) navProgressPct.textContent = `${pct}%`;
+          if (scrubPercentageDisplay) scrubPercentageDisplay.textContent = `PATH COMPLETION: ${pct}%`;
+
+          // 2. Draw SVG Path with strokeDashoffset
+          if (scentPath) {
+            const drawOffset = pathLength * (1 - progress);
+            scentPath.style.strokeDashoffset = drawOffset;
+          }
+
+          // 3. Move Tracer Particle along SVG curve
+          if (scentPath && pathTracer) {
+            const currentDist = progress * pathLength;
+            const point = scentPath.getPointAtLength(currentDist);
+            pathTracer.setAttribute("transform", `translate(${point.x}, ${point.y})`);
+          }
+
+          // 4. Determine Active Phase based on progress ranges
+          let currentPhase = 1;
+          if (progress < 0.25) currentPhase = 1;
+          else if (progress < 0.55) currentPhase = 2;
+          else if (progress < 0.82) currentPhase = 3;
+          else currentPhase = 4;
+
+          updateActivePhaseUI(currentPhase);
+        }
+      });
+    }
+
+    // Active Phase UI Updater
+    let lastActivePhase = -1;
+
+    function updateActivePhaseUI(phaseIndex) {
+      if (phaseIndex === lastActivePhase) return;
+      lastActivePhase = phaseIndex;
+
+      // Update Phase Cards
+      for (let i = 1; i <= 4; i++) {
+        const card = document.getElementById(`phase-card-${i}`);
+        const hudBtn = document.getElementById(`hud-btn-${i}`);
+        const outerCircle = document.getElementById(`node-outer-${i}`);
+        const innerCircle = document.getElementById(`node-inner-${i}`);
+
+        if (i === phaseIndex) {
+          // Show active card
+          if (card) {
+            card.classList.remove('opacity-0', 'scale-95', 'pointer-events-none', 'z-0');
+            card.classList.add('opacity-100', 'scale-100', 'z-10');
+          }
+          // Highlight HUD button
+          if (hudBtn) {
+            hudBtn.className = "hud-tab-btn px-3 py-1.5 rounded-xl bg-amber-500/25 text-amber-300 border border-amber-500/50 font-bold transition-all shadow-md";
+          }
+          // Highlight SVG Node
+          if (outerCircle) {
+            outerCircle.setAttribute("stroke", "#f59e0b");
+            outerCircle.setAttribute("r", "16");
+          }
+          if (innerCircle) innerCircle.setAttribute("fill", "#f59e0b");
+        } else {
+          // Hide inactive cards
+          if (card) {
+            card.classList.remove('opacity-100', 'scale-100', 'z-10');
+            card.classList.add('opacity-0', 'scale-95', 'pointer-events-none', 'z-0');
+          }
+          // Reset HUD button
+          if (hudBtn) {
+            hudBtn.className = "hud-tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition-all";
+          }
+          // Reset SVG Node
+          if (outerCircle) {
+            outerCircle.setAttribute("stroke", "#475569");
+            outerCircle.setAttribute("r", "14");
+          }
+          if (innerCircle) innerCircle.setAttribute("fill", "#64748b");
+        }
+      }
+
+      // Update Telemetry Data
+      const data = phaseTelemetryData[phaseIndex - 1];
+      if (data) {
+        if (navActivePhaseLabel) navActivePhaseLabel.textContent = data.label;
+        if (currentPhaseBreadcrumb) currentPhaseBreadcrumb.textContent = data.label;
+        if (telemSniff) telemSniff.textContent = data.sniff;
+        if (telemBulb) telemBulb.textContent = data.bulb;
+        if (telemBulbBar) telemBulbBar.style.width = data.bulb;
+        if (telemCortisol) telemCortisol.textContent = data.cortisol;
+        if (telemCortisolBar) telemCortisolBar.style.width = data.cortisolBar;
+        if (telemWalkMode) telemWalkMode.textContent = data.mode;
+
+        if (telemChemical) {
+          telemChemical.innerHTML = data.chemicals.map(chem => `
+            <span class="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300">${chem}</span>
+          `).join('');
+        }
+      }
+    }
+
+    // Smooth Jump to Phase Function (Calculates exact target scroll position)
+    function jumpToPhase(phaseNumber) {
+      if (!scrollyTriggerInstance) return;
+
+      const phaseProgressTarget = [0.02, 0.35, 0.68, 0.94];
+      const targetPct = phaseProgressTarget[phaseNumber - 1];
+
+      const startY = scrollyTriggerInstance.start;
+      const endY = scrollyTriggerInstance.end;
+      const targetScrollY = startY + (endY - startY) * targetPct;
+
+      gsap.to(window, {
+        scrollTo: targetScrollY,
+        duration: 1.2,
+        ease: "power2.inOut"
+      });
+    }
+
+    // ==========================================
+    // Interactive Scent Molecule Analyzer Logic
+    // ==========================================
+    const moleculeDetails = {
+      geosmin: {
+        formula: "C₁₂H₂₂O (反式-1,10-二甲基-反式-9-萘酚)",
+        source: "來源：放線菌分泌物，散佈於晨霧濕潤之泥土與落葉堆中。",
+        resonance: "嗅球後背區（Posterior Bulb）",
+        mechanism: "機制：極低濃度（0.001 ppb）即可觸發前腦基底核，大幅抑制交感神經。",
+        behavior: "深度嗅探與地表打滾",
+        impact: "行為：引導犬隻放緩腳步，進入全神貫注的心流狀態（Flow State）。"
+      },
+      terpene: {
+        formula: "C₁₀H₁₆ / C₁₅H₂₄ (α-蒎烯與律草烯混合)",
+        source: "來源：野生白花酢漿草、苔蘚與碎裂針葉分泌之揮發物。",
+        resonance: "嗅覺皮層側梨狀葉（Piriform Cortex）",
+        mechanism: "機制：促進海馬迴神經傳導，強化空間記憶圖譜與地形標定。",
+        behavior: "短促連續採樣（Sniff-Bout）",
+        impact: "行為：伴隨鼻翼微張，快速建構周邊植被半徑 5 公尺之有機氣味模型。"
+      },
+      pheromone: {
+        formula: "犬類外分泌綜合費洛蒙（DAP 同調標記）",
+        source: "來源：其他友善同伴於路樹基部留下的足跡與面頰微痕。",
+        resonance: "鋤鼻器與副嗅球（Vomeronasal Organ）",
+        mechanism: "機制：非壓迫式讀取同伴年齡、性別、荷爾蒙與社交心情。",
+        behavior: "側身轉頭、舔鼻等安定訊號",
+        impact: "行為：免去正面肉搏接觸，以氣味非同步通訊達成高度和平共處。"
+      },
+      asphalt: {
+        formula: "C₈H₁₀ ~ C₁₄H₃₀ (都會硬質鋪面微量揮發物)",
+        source: "來源：清晨低溫凝結之柏油路面、輪胎膠痕與雨水混合物。",
+        resonance: "三叉神經嗅感分支（Trigeminal Nerve）",
+        mechanism: "機制：輕度刺激外周感覺受器，促使注意力由緊繃警惕轉為地表探索。",
+        behavior: "自主節奏減敏（Urban Decompression）",
+        impact: "行為：協助狗狗適應城市聽視覺噪音，建立外出的安全緩衝心態。"
+      }
+    };
+
+    function selectMolecule(key) {
+      const data = moleculeDetails[key];
+      if (!data) return;
+
+      // Update button active state
+      ['geosmin', 'terpene', 'pheromone', 'asphalt'].forEach(k => {
+        const btn = document.getElementById(`mol-btn-${k}`);
+        if (!btn) return;
+        if (k === key) {
+          btn.className = "mol-btn p-3 rounded-xl border border-amber-500/50 bg-amber-500/20 text-amber-300 font-mono text-xs font-bold text-left transition-all shadow-md";
+        } else {
+          btn.className = "mol-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-400 hover:border-slate-700 font-mono text-xs font-bold text-left transition-all";
+        }
+      });
+
+      // Animate text update with GSAP
+      gsap.to('#molecule-display-board', {
+        opacity: 0.3,
+        duration: 0.15,
+        onComplete: () => {
+          document.getElementById('mol-formula').textContent = data.formula;
+          document.getElementById('mol-source').textContent = data.source;
+          document.getElementById('mol-resonance').textContent = data.resonance;
+          document.getElementById('mol-mechanism').textContent = data.mechanism;
+          document.getElementById('mol-behavior').textContent = data.behavior;
+          document.getElementById('mol-impact').textContent = data.impact;
+
+          gsap.to('#molecule-display-board', { opacity: 1, duration: 0.25 });
+        }
+      });
+    }
+
+
+    // ==========================================
+    // Web Audio API Ambient Morning Sound Generator
+    // ==========================================
+    let audioCtx = null;
+    let isAudioPlaying = false;
+    let pinkNoiseNode = null;
+    let gainNode = null;
+
+    function toggleAmbientAudio() {
+      const audioBtn = document.getElementById('ambient-audio-btn');
+      const iconOff = document.getElementById('audio-icon-off');
+      const iconOn = document.getElementById('audio-icon-on');
+      const textSpan = document.getElementById('audio-btn-text');
+
+      if (!isAudioPlaying) {
+        // Start Web Audio Synthesizer
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!audioCtx) audioCtx = new AudioContext();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+
+          // Generate soft pink noise (simulating gentle morning breeze & rustling leaves)
+          const bufferSize = audioCtx.sampleRate * 2;
+          const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + white * 0.0555179;
+            b1 = 0.99332 * b1 + white * 0.0750759;
+            b2 = 0.96900 * b2 + white * 0.1538520;
+            b3 = 0.86650 * b3 + white * 0.3104856;
+            b4 = 0.55000 * b4 + white * 0.5329522;
+            b5 = -0.7616 * b5 - white * 0.0168980;
+            output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.035;
+            b6 = white * 0.115926;
+          }
+
+          const whiteNoise = audioCtx.createBufferSource();
+          whiteNoise.buffer = noiseBuffer;
+          whiteNoise.loop = true;
+
+          // Gentle Lowpass filter
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(320, audioCtx.currentTime);
+
+          // Subtle LFO for breathing wind movement
+          const lfo = audioCtx.createOscillator();
+          lfo.frequency.setValueAtTime(0.15, audioCtx.currentTime);
+          const lfoGain = audioCtx.createGain();
+          lfoGain.gain.setValueAtTime(150, audioCtx.currentTime);
+          lfo.connect(filter.frequency);
+          lfo.start();
+
+          gainNode = audioCtx.createGain();
+          gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.35, audioCtx.currentTime + 2);
+
+          whiteNoise.connect(filter);
+          filter.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          whiteNoise.start();
+
+          pinkNoiseNode = whiteNoise;
+          isAudioPlaying = true;
+
+          iconOff.classList.add('hidden');
+          iconOn.classList.remove('hidden');
+          textSpan.textContent = "晨光音頻播放中";
+          audioBtn.classList.add('border-amber-400', 'bg-amber-500/10');
+        } catch (e) {
+          console.warn("Web Audio not supported or blocked: ", e);
+        }
+      } else {
+        // Stop audio
+        if (gainNode && audioCtx) {
+          gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
+          setTimeout(() => {
+            if (pinkNoiseNode) {
+              pinkNoiseNode.stop();
+              pinkNoiseNode.disconnect();
+            }
+            isAudioPlaying = false;
+          }, 1000);
+        } else {
+          isAudioPlaying = false;
+        }
+
+        iconOff.classList.remove('hidden');
+        iconOn.classList.add('hidden');
+        textSpan.textContent = "晨光氛圍聲";
+        audioBtn.classList.remove('border-amber-400', 'bg-amber-500/10');
+      }
+    }
+
+    document.getElementById('ambient-audio-btn').addEventListener('click', toggleAmbientAudio);
+
+    // Window load and resize handlers
+    window.addEventListener('DOMContentLoaded', () => {
+      initScrollytelling();
+      updateActivePhaseUI(1);
+    });
+
+    window.addEventListener('resize', () => {
+      ScrollTrigger.refresh();
+      if (scentPath) {
+        pathLength = scentPath.getTotalLength();
+        scentPath.style.strokeDasharray = pathLength;
+      }
+    });
+  </script>
+</body>
+</html>
