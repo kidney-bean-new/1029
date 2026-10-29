@@ -136,6 +136,15 @@
       stroke-dashoffset: 2000;
       transition: stroke 0.3s ease;
     }
+
+    /* BGM Audio Equalizer Dancing Animation */
+    @keyframes eqBar {
+      0%, 100% { height: 3px; }
+      50% { height: 13px; }
+    }
+    .bgm-playing span:nth-child(1) { animation: eqBar 0.75s ease-in-out infinite; }
+    .bgm-playing span:nth-child(2) { animation: eqBar 0.52s ease-in-out infinite 0.15s; }
+    .bgm-playing span:nth-child(3) { animation: eqBar 0.88s ease-in-out infinite 0.3s; }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-amber-500/30 selection:text-amber-300 tech-grid-bg relative min-h-screen overflow-x-hidden">
@@ -183,17 +192,26 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center space-x-2.5">
-        <!-- Audio Ambience Generator Button -->
-        <button id="ambient-audio-btn" title="切換自然晨霧音頻氛圍 (Web Audio 氛圍合成器)" class="px-3 py-1.5 rounded-xl text-xs font-mono bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-500/50 text-slate-300 transition-all flex items-center space-x-1.5 active:scale-95">
-          <svg id="audio-icon-off" class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke="#94a3b8"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" stroke="#ef4444"/></svg>
-          <svg id="audio-icon-on" class="w-3.5 h-3.5 text-amber-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
-          <span id="audio-btn-text" class="hidden sm:inline">晨光氛圍聲</span>
+      <!-- Action Buttons: BGM, SFX & CTA -->
+      <div class="flex items-center space-x-2">
+        <!-- BGM Toggle Button -->
+        <button id="bgm-toggle-btn" onclick="AudioEngine.toggleBGM()" onmouseenter="AudioEngine.playHoverSound()" title="切換晨光電影感背景音樂 (Web Audio 合成器)" class="px-3 py-1.5 rounded-xl text-xs font-mono bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-500/50 text-slate-300 transition-all flex items-center space-x-2 active:scale-95 shadow-sm">
+          <div id="bgm-eq-visualizer" class="flex items-end space-x-0.5 h-3.5 w-3.5 justify-center">
+            <span class="w-0.5 bg-amber-400 rounded-full h-1"></span>
+            <span class="w-0.5 bg-amber-400 rounded-full h-2"></span>
+            <span class="w-0.5 bg-amber-400 rounded-full h-1"></span>
+          </div>
+          <span id="bgm-btn-text" class="hidden sm:inline">BGM: 晨光交響</span>
+        </button>
+
+        <!-- Interactive SFX Toggle Button -->
+        <button id="sfx-toggle-btn" onclick="AudioEngine.toggleSFX()" onmouseenter="AudioEngine.playHoverSound()" title="切換互動音效" class="px-2.5 py-1.5 rounded-xl text-xs font-mono bg-slate-900/90 hover:bg-slate-800 border border-emerald-500/40 text-emerald-300 transition-all flex items-center space-x-1 active:scale-95">
+          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span id="sfx-btn-text" class="hidden md:inline">音效: ON</span>
         </button>
 
         <!-- Jump to Scrollytelling -->
-        <a href="#scrolly-stage" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-sans tracking-tight shadow-md hover:shadow-amber-500/25 transition-all active:scale-95 flex items-center space-x-1">
+        <a href="#scrolly-stage" onclick="AudioEngine.playHudClickSound()" onmouseenter="AudioEngine.playHoverSound()" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-sans tracking-tight shadow-md hover:shadow-amber-500/25 transition-all active:scale-95 flex items-center space-x-1">
           <span>開始探索</span>
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
         </a>
@@ -556,28 +574,28 @@
 
                 <!-- 4. Interactive Phase Nodes (Clickable & Hover-responsive) -->
                 <!-- Node 01: Sensory Awakening (Top) -->
-                <g id="svg-node-1" class="cursor-pointer group" onclick="jumpToPhase(1)">
+                <g id="svg-node-1" class="cursor-pointer group" onclick="jumpToPhase(1); AudioEngine.playNodeClickSound();" onmouseenter="AudioEngine.playHoverSound()">
                   <circle id="node-outer-1" cx="150" cy="40" r="14" fill="#0f172a" stroke="#f59e0b" stroke-width="3" class="transition-all duration-300 group-hover:r-18" />
                   <circle id="node-inner-1" cx="150" cy="40" r="6" fill="#f59e0b" />
                   <text x="180" y="44" fill="#f59e0b" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="bold">01 // AWAKEN</text>
                 </g>
 
                 <!-- Node 02: Urban Decompression (~30%) -->
-                <g id="svg-node-2" class="cursor-pointer group" onclick="jumpToPhase(2)">
+                <g id="svg-node-2" class="cursor-pointer group" onclick="jumpToPhase(2); AudioEngine.playNodeClickSound();" onmouseenter="AudioEngine.playHoverSound()">
                   <circle id="node-outer-2" cx="160" cy="285" r="14" fill="#0f172a" stroke="#64748b" stroke-width="3" class="transition-all duration-300 group-hover:r-18" />
                   <circle id="node-inner-2" cx="160" cy="285" r="6" fill="#64748b" />
                   <text x="190" y="290" fill="#cbd5e1" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="bold">02 // BUFFER</text>
                 </g>
 
                 <!-- Node 03: Botanical Matrix (~65%) -->
-                <g id="svg-node-3" class="cursor-pointer group" onclick="jumpToPhase(3)">
+                <g id="svg-node-3" class="cursor-pointer group" onclick="jumpToPhase(3); AudioEngine.playNodeClickSound();" onmouseenter="AudioEngine.playHoverSound()">
                   <circle id="node-outer-3" cx="140" cy="510" r="14" fill="#0f172a" stroke="#64748b" stroke-width="3" class="transition-all duration-300 group-hover:r-18" />
                   <circle id="node-inner-3" cx="140" cy="510" r="6" fill="#64748b" />
                   <text x="170" y="515" fill="#cbd5e1" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="bold">03 // BOTANICAL</text>
                 </g>
 
                 <!-- Node 04: Social Synchronization (~95%) -->
-                <g id="svg-node-4" class="cursor-pointer group" onclick="jumpToPhase(4)">
+                <g id="svg-node-4" class="cursor-pointer group" onclick="jumpToPhase(4); AudioEngine.playNodeClickSound();" onmouseenter="AudioEngine.playHoverSound()">
                   <circle id="node-outer-4" cx="150" cy="775" r="14" fill="#0f172a" stroke="#64748b" stroke-width="3" class="transition-all duration-300 group-hover:r-18" />
                   <circle id="node-inner-4" cx="150" cy="775" r="6" fill="#64748b" />
                   <text x="180" y="780" fill="#cbd5e1" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="bold">04 // SOCIAL</text>
@@ -770,16 +788,16 @@
         <div class="pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
           <!-- Dock Buttons -->
           <div class="flex items-center space-x-1.5 sm:space-x-3 overflow-x-auto py-1">
-            <button onclick="jumpToPhase(1)" id="hud-btn-1" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 transition-all font-bold">
+            <button onclick="jumpToPhase(1); AudioEngine.playHudClickSound();" onmouseenter="AudioEngine.playHoverSound()" id="hud-btn-1" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 transition-all font-bold">
               01 嗅覺啟動
             </button>
-            <button onclick="jumpToPhase(2)" id="hud-btn-2" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition-all">
+            <button onclick="jumpToPhase(2); AudioEngine.playHudClickSound();" onmouseenter="AudioEngine.playHoverSound()" id="hud-btn-2" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition-all">
               02 城市緩衝
             </button>
-            <button onclick="jumpToPhase(3)" id="hud-btn-3" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition-all">
+            <button onclick="jumpToPhase(3); AudioEngine.playHudClickSound();" onmouseenter="AudioEngine.playHoverSound()" id="hud-btn-3" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition-all">
               03 氣味叢林
             </button>
-            <button onclick="jumpToPhase(4)" id="hud-btn-4" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition-all">
+            <button onclick="jumpToPhase(4); AudioEngine.playHudClickSound();" onmouseenter="AudioEngine.playHoverSound()" id="hud-btn-4" class="hud-tab-btn px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-700 transition-all">
               04 禮貌社交
             </button>
           </div>
@@ -890,19 +908,19 @@
 
       <!-- Interactive Chemical Selector Tabs -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <button onclick="selectMolecule('geosmin')" id="mol-btn-geosmin" class="mol-btn p-3 rounded-xl border border-amber-500/40 bg-amber-500/15 text-amber-300 font-mono text-xs font-bold text-left transition-all">
+        <button onclick="selectMolecule('geosmin')" onmouseenter="AudioEngine.playHoverSound()" id="mol-btn-geosmin" class="mol-btn p-3 rounded-xl border border-amber-500/40 bg-amber-500/15 text-amber-300 font-mono text-xs font-bold text-left transition-all">
           <div>Geosmin</div>
           <div class="text-[10px] text-slate-400 font-normal">濕土土臭素</div>
         </button>
-        <button onclick="selectMolecule('terpene')" id="mol-btn-terpene" class="mol-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 font-mono text-xs font-bold text-left transition-all">
+        <button onclick="selectMolecule('terpene')" onmouseenter="AudioEngine.playHoverSound()" id="mol-btn-terpene" class="mol-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 font-mono text-xs font-bold text-left transition-all">
           <div>Terpenes</div>
           <div class="text-[10px] text-slate-400 font-normal">草本酢漿草萜</div>
         </button>
-        <button onclick="selectMolecule('pheromone')" id="mol-btn-pheromone" class="mol-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 font-mono text-xs font-bold text-left transition-all">
+        <button onclick="selectMolecule('pheromone')" onmouseenter="AudioEngine.playHoverSound()" id="mol-btn-pheromone" class="mol-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 font-mono text-xs font-bold text-left transition-all">
           <div>Pheromones</div>
           <div class="text-[10px] text-slate-400 font-normal">同伴犬類費洛蒙</div>
         </button>
-        <button onclick="selectMolecule('asphalt')" id="mol-btn-asphalt" class="mol-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 font-mono text-xs font-bold text-left transition-all">
+        <button onclick="selectMolecule('asphalt')" onmouseenter="AudioEngine.playHoverSound()" id="mol-btn-asphalt" class="mol-btn p-3 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700 font-mono text-xs font-bold text-left transition-all">
           <div>Urban VOCs</div>
           <div class="text-[10px] text-slate-400 font-normal">瀝青與車流痕跡</div>
         </button>
@@ -1104,7 +1122,13 @@
 
     function updateActivePhaseUI(phaseIndex) {
       if (phaseIndex === lastActivePhase) return;
+      const isInitial = (lastActivePhase === -1);
       lastActivePhase = phaseIndex;
+
+      // Play Phase Transition Chime when scrolling into a new phase
+      if (!isInitial && window.AudioEngine) {
+        AudioEngine.playPhaseSound(phaseIndex);
+      }
 
       // Update Phase Cards
       for (let i = 1; i <= 4; i++) {
@@ -1228,6 +1252,11 @@
       const data = moleculeDetails[key];
       if (!data) return;
 
+      // Play specific molecule resonance sound
+      if (window.AudioEngine) {
+        AudioEngine.playMoleculeSound(key);
+      }
+
       // Update button active state
       ['geosmin', 'terpene', 'pheromone', 'asphalt'].forEach(k => {
         const btn = document.getElementById(`mol-btn-${k}`);
@@ -1256,105 +1285,466 @@
       });
     }
 
+    // ========================================================
+    // ADVANCED WEB AUDIO ENGINE: CINEMATIC BGM & INTERACTIVE SFX
+    // ========================================================
+    const AudioEngine = (() => {
+      let ctx = null;
+      let isBgmPlaying = false;
+      let isSfxEnabled = true;
 
-    // ==========================================
-    // Web Audio API Ambient Morning Sound Generator
-    // ==========================================
-    let audioCtx = null;
-    let isAudioPlaying = false;
-    let pinkNoiseNode = null;
-    let gainNode = null;
+      // Gain buses
+      let masterGain = null;
+      let bgmGain = null;
+      let sfxGain = null;
 
-    function toggleAmbientAudio() {
-      const audioBtn = document.getElementById('ambient-audio-btn');
-      const iconOff = document.getElementById('audio-icon-off');
-      const iconOn = document.getElementById('audio-icon-on');
-      const textSpan = document.getElementById('audio-btn-text');
+      // BGM components
+      let chordIntervalTimer = null;
+      let bgmFilter = null;
+      let bgmLfo = null;
+      let pinkNoiseNode = null;
+      let birdTimer = null;
 
-      if (!isAudioPlaying) {
-        // Start Web Audio Synthesizer
-        try {
+      // Cinematic Warm Chord progression: Dmaj9 -> Bm9 -> Gmaj9 -> A7sus4
+      const chords = [
+        [146.83, 220.0, 277.18, 329.63, 369.99], // Dmaj9 (D3, A3, C#4, E4, F#4)
+        [123.47, 185.0, 220.0, 277.18, 293.66], // Bm9   (B2, F#3, A3, C#4, D4)
+        [98.0, 146.83, 185.0, 220.0, 246.94],  // Gmaj9 (G2, D3, F#3, A3, B3)
+        [110.0, 164.81, 196.0, 293.66, 329.63] // A7sus4 (A2, E3, G3, D4, E4)
+      ];
+      let chordIndex = 0;
+
+      function initContext() {
+        if (!ctx) {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (!audioCtx) audioCtx = new AudioContext();
-          if (audioCtx.state === 'suspended') audioCtx.resume();
+          ctx = new AudioContext();
 
-          // Generate soft pink noise (simulating gentle morning breeze & rustling leaves)
-          const bufferSize = audioCtx.sampleRate * 2;
-          const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-          const output = noiseBuffer.getChannelData(0);
-          let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+          // Master bus
+          masterGain = ctx.createGain();
+          masterGain.gain.setValueAtTime(0.85, ctx.currentTime);
+          masterGain.connect(ctx.destination);
 
-          for (let i = 0; i < bufferSize; i++) {
-            const white = Math.random() * 2 - 1;
-            b0 = 0.99886 * b0 + white * 0.0555179;
-            b1 = 0.99332 * b1 + white * 0.0750759;
-            b2 = 0.96900 * b2 + white * 0.1538520;
-            b3 = 0.86650 * b3 + white * 0.3104856;
-            b4 = 0.55000 * b4 + white * 0.5329522;
-            b5 = -0.7616 * b5 - white * 0.0168980;
-            output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.035;
-            b6 = white * 0.115926;
-          }
+          // BGM bus
+          bgmGain = ctx.createGain();
+          bgmGain.gain.setValueAtTime(0.001, ctx.currentTime);
+          bgmGain.connect(masterGain);
 
-          const whiteNoise = audioCtx.createBufferSource();
-          whiteNoise.buffer = noiseBuffer;
-          whiteNoise.loop = true;
-
-          // Gentle Lowpass filter
-          const filter = audioCtx.createBiquadFilter();
-          filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(320, audioCtx.currentTime);
-
-          // Subtle LFO for breathing wind movement
-          const lfo = audioCtx.createOscillator();
-          lfo.frequency.setValueAtTime(0.15, audioCtx.currentTime);
-          const lfoGain = audioCtx.createGain();
-          lfoGain.gain.setValueAtTime(150, audioCtx.currentTime);
-          lfo.connect(filter.frequency);
-          lfo.start();
-
-          gainNode = audioCtx.createGain();
-          gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.35, audioCtx.currentTime + 2);
-
-          whiteNoise.connect(filter);
-          filter.connect(gainNode);
-          gainNode.connect(audioCtx.destination);
-          whiteNoise.start();
-
-          pinkNoiseNode = whiteNoise;
-          isAudioPlaying = true;
-
-          iconOff.classList.add('hidden');
-          iconOn.classList.remove('hidden');
-          textSpan.textContent = "晨光音頻播放中";
-          audioBtn.classList.add('border-amber-400', 'bg-amber-500/10');
-        } catch (e) {
-          console.warn("Web Audio not supported or blocked: ", e);
+          // SFX bus
+          sfxGain = ctx.createGain();
+          sfxGain.gain.setValueAtTime(0.35, ctx.currentTime);
+          sfxGain.connect(masterGain);
         }
-      } else {
-        // Stop audio
-        if (gainNode && audioCtx) {
-          gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1);
-          setTimeout(() => {
-            if (pinkNoiseNode) {
-              pinkNoiseNode.stop();
-              pinkNoiseNode.disconnect();
-            }
-            isAudioPlaying = false;
-          }, 1000);
-        } else {
-          isAudioPlaying = false;
+        if (ctx.state === 'suspended') {
+          ctx.resume();
         }
-
-        iconOff.classList.remove('hidden');
-        iconOn.classList.add('hidden');
-        textSpan.textContent = "晨光氛圍聲";
-        audioBtn.classList.remove('border-amber-400', 'bg-amber-500/10');
       }
-    }
 
-    document.getElementById('ambient-audio-btn').addEventListener('click', toggleAmbientAudio);
+      // --- BGM Engine ---
+      function playNextChord() {
+        if (!isBgmPlaying || !ctx) return;
+        const freqs = chords[chordIndex];
+        chordIndex = (chordIndex + 1) % chords.length;
+
+        const now = ctx.currentTime;
+        const chordGain = ctx.createGain();
+        chordGain.gain.setValueAtTime(0.0001, now);
+        chordGain.gain.linearRampToValueAtTime(0.045, now + 1.8);
+        chordGain.gain.exponentialRampToValueAtTime(0.0001, now + 5.3);
+
+        freqs.forEach((freq, i) => {
+          // Dual detuned oscillators for lush analog chorus
+          [-4, 4].forEach(detune => {
+            const osc = ctx.createOscillator();
+            osc.type = (i === 0 || i === 1) ? 'triangle' : 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+            osc.detune.setValueAtTime(detune, now);
+            osc.connect(chordGain);
+            osc.start(now);
+            osc.stop(now + 5.5);
+          });
+        });
+
+        chordGain.connect(bgmFilter);
+      }
+
+      function startBreeze() {
+        if (!ctx) return;
+        const bufferSize = ctx.sampleRate * 2;
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.02;
+          b6 = white * 0.115926;
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = noiseBuffer;
+        noise.loop = true;
+
+        const noiseFilter = ctx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.setValueAtTime(380, ctx.currentTime);
+
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.015, ctx.currentTime);
+
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(bgmGain);
+        noise.start();
+        pinkNoiseNode = noise;
+      }
+
+      function scheduleBirdChirp() {
+        if (!isBgmPlaying || !ctx) return;
+        const nextDelay = 3500 + Math.random() * 5000;
+        birdTimer = setTimeout(() => {
+          if (!isBgmPlaying || !ctx) return;
+          try {
+            const now = ctx.currentTime;
+            const birdOsc = ctx.createOscillator();
+            const birdGain = ctx.createGain();
+            const baseFreq = 2600 + Math.random() * 800;
+
+            birdOsc.type = 'sine';
+            birdOsc.frequency.setValueAtTime(baseFreq, now);
+            birdOsc.frequency.exponentialRampToValueAtTime(baseFreq + 600, now + 0.06);
+            birdOsc.frequency.exponentialRampToValueAtTime(baseFreq + 200, now + 0.14);
+
+            birdGain.gain.setValueAtTime(0.0001, now);
+            birdGain.gain.linearRampToValueAtTime(0.018, now + 0.03);
+            birdGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.16);
+
+            birdOsc.connect(birdGain);
+            birdGain.connect(bgmGain);
+            birdOsc.start(now);
+            birdOsc.stop(now + 0.18);
+          } catch(e) {}
+          scheduleBirdChirp();
+        }, nextDelay);
+      }
+
+      function startBGM() {
+        initContext();
+        if (isBgmPlaying) return;
+        isBgmPlaying = true;
+
+        // Warm master lowpass filter for synth pad with gentle LFO
+        bgmFilter = ctx.createBiquadFilter();
+        bgmFilter.type = 'lowpass';
+        bgmFilter.frequency.setValueAtTime(650, ctx.currentTime);
+        bgmFilter.Q.setValueAtTime(1.8, ctx.currentTime);
+
+        bgmLfo = ctx.createOscillator();
+        bgmLfo.frequency.setValueAtTime(0.07, ctx.currentTime);
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.setValueAtTime(180, ctx.currentTime);
+        bgmLfo.connect(lfoGain);
+        lfoGain.connect(bgmFilter.frequency);
+        bgmLfo.start();
+
+        bgmFilter.connect(bgmGain);
+
+        // Smooth fade-in
+        bgmGain.gain.cancelScheduledValues(ctx.currentTime);
+        bgmGain.gain.setValueAtTime(0.001, ctx.currentTime);
+        bgmGain.gain.exponentialRampToValueAtTime(0.24, ctx.currentTime + 2.5);
+
+        // Start chords
+        chordIndex = 0;
+        playNextChord();
+        chordIntervalTimer = setInterval(playNextChord, 5200);
+
+        // Start ambient nature
+        startBreeze();
+        scheduleBirdChirp();
+
+        updateBgmUI(true);
+      }
+
+      function stopBGM() {
+        if (!isBgmPlaying || !ctx) return;
+        isBgmPlaying = false;
+
+        clearInterval(chordIntervalTimer);
+        clearTimeout(birdTimer);
+
+        if (bgmGain) {
+          bgmGain.gain.cancelScheduledValues(ctx.currentTime);
+          bgmGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.2);
+        }
+
+        setTimeout(() => {
+          if (pinkNoiseNode) {
+            try { pinkNoiseNode.stop(); pinkNoiseNode.disconnect(); } catch(e) {}
+            pinkNoiseNode = null;
+          }
+          if (bgmLfo) {
+            try { bgmLfo.stop(); bgmLfo.disconnect(); } catch(e) {}
+            bgmLfo = null;
+          }
+        }, 1300);
+
+        updateBgmUI(false);
+      }
+
+      function toggleBGM() {
+        initContext();
+        if (isBgmPlaying) {
+          stopBGM();
+        } else {
+          startBGM();
+        }
+      }
+
+      function updateBgmUI(playing) {
+        const btn = document.getElementById('bgm-toggle-btn');
+        const eq = document.getElementById('bgm-eq-visualizer');
+        const text = document.getElementById('bgm-btn-text');
+        if (!btn) return;
+
+        if (playing) {
+          btn.classList.add('border-amber-400', 'bg-amber-500/15', 'text-amber-300', 'shadow-[0_0_15px_rgba(245,158,11,0.25)]');
+          btn.classList.remove('border-slate-700/80', 'text-slate-300');
+          if (eq) eq.classList.add('bgm-playing');
+          if (text) text.textContent = "BGM: 播放中 ♫";
+        } else {
+          btn.classList.remove('border-amber-400', 'bg-amber-500/15', 'text-amber-300', 'shadow-[0_0_15px_rgba(245,158,11,0.25)]');
+          btn.classList.add('border-slate-700/80', 'text-slate-300');
+          if (eq) eq.classList.remove('bgm-playing');
+          if (text) text.textContent = "BGM: 晨光交響";
+        }
+      }
+
+      // --- Interactive Sound Effects (SFX) ---
+      function toggleSFX() {
+        isSfxEnabled = !isSfxEnabled;
+        const btn = document.getElementById('sfx-toggle-btn');
+        const text = document.getElementById('sfx-btn-text');
+        if (btn && text) {
+          if (isSfxEnabled) {
+            btn.className = "px-2.5 py-1.5 rounded-xl text-xs font-mono bg-slate-900/90 hover:bg-slate-800 border border-emerald-500/40 text-emerald-300 transition-all flex items-center space-x-1 active:scale-95";
+            text.textContent = "音效: ON";
+            playHudClickSound();
+          } else {
+            btn.className = "px-2.5 py-1.5 rounded-xl text-xs font-mono bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-500 transition-all flex items-center space-x-1 active:scale-95";
+            text.textContent = "音效: OFF";
+          }
+        }
+      }
+
+      // 1. Subtle UI Hover Tick (15ms delicate acoustic transient)
+      function playHoverSound() {
+        if (!isSfxEnabled) return;
+        initContext();
+        try {
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1800, now);
+          osc.frequency.exponentialRampToValueAtTime(600, now + 0.025);
+
+          gain.gain.setValueAtTime(0.02, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
+
+          osc.connect(gain);
+          gain.connect(sfxGain);
+          osc.start(now);
+          osc.stop(now + 0.03);
+        } catch(e) {}
+      }
+
+      // 2. HUD Button Click (Two-tone high-tech click)
+      function playHudClickSound() {
+        if (!isSfxEnabled) return;
+        initContext();
+        try {
+          const now = ctx.currentTime;
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(1200, now);
+          osc1.frequency.exponentialRampToValueAtTime(800, now + 0.04);
+
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(1600, now + 0.015);
+          osc2.frequency.exponentialRampToValueAtTime(1200, now + 0.06);
+
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(sfxGain);
+
+          osc1.start(now);
+          osc2.start(now + 0.015);
+          osc1.stop(now + 0.05);
+          osc2.stop(now + 0.08);
+        } catch(e) {}
+      }
+
+      // 3. SVG Node Click (Warm Crystal Resonance Bell)
+      function playNodeClickSound() {
+        if (!isSfxEnabled) return;
+        initContext();
+        try {
+          const now = ctx.currentTime;
+          const freqs = [880, 1320, 1760]; // Root, 5th, Octave
+          const masterBellGain = ctx.createGain();
+          masterBellGain.gain.setValueAtTime(0.12, now);
+          masterBellGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.85);
+          masterBellGain.connect(sfxGain);
+
+          freqs.forEach((f, idx) => {
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, now);
+            osc.connect(masterBellGain);
+            osc.start(now);
+            osc.stop(now + 0.9);
+          });
+        } catch(e) {}
+      }
+
+      // 4. Milestone Phase Transition Chime (Sub + Harmonic Swell)
+      function playPhaseSound(phase) {
+        if (!isSfxEnabled) return;
+        initContext();
+        try {
+          const now = ctx.currentTime;
+          // Harmonic root notes for phases 1-4
+          const phaseFreqs = [
+            [293.66, 440.0],  // Phase 1: D4 + A4
+            [369.99, 554.37], // Phase 2: F#4 + C#5
+            [440.0, 659.25],  // Phase 3: A4 + E5
+            [587.33, 880.0]   // Phase 4: D5 + A5
+          ];
+          const [f1, f2] = phaseFreqs[phase - 1] || [440, 660];
+
+          // Sub bass pulse
+          const subOsc = ctx.createOscillator();
+          const subGain = ctx.createGain();
+          subOsc.type = 'sine';
+          subOsc.frequency.setValueAtTime(55 + phase * 6, now);
+          subGain.gain.setValueAtTime(0.15, now);
+          subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+          subOsc.connect(subGain);
+          subGain.connect(sfxGain);
+          subOsc.start(now);
+          subOsc.stop(now + 0.55);
+
+          // Harmonic chime
+          const chimeGain = ctx.createGain();
+          chimeGain.gain.setValueAtTime(0.001, now);
+          chimeGain.gain.linearRampToValueAtTime(0.09, now + 0.06);
+          chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.95);
+          chimeGain.connect(sfxGain);
+
+          [f1, f2].forEach(freq => {
+            const osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+            osc.connect(chimeGain);
+            osc.start(now);
+            osc.stop(now + 1.0);
+          });
+        } catch(e) {}
+      }
+
+      // 5. Molecule Analyzer Tone
+      function playMoleculeSound(type) {
+        if (!isSfxEnabled) return;
+        initContext();
+        try {
+          const now = ctx.currentTime;
+          const molGain = ctx.createGain();
+          molGain.gain.setValueAtTime(0.12, now);
+          molGain.connect(sfxGain);
+
+          if (type === 'geosmin') {
+            // Earthy deep resonance gong
+            const osc = ctx.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(130.81, now); // C3
+            molGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+            osc.connect(molGain);
+            osc.start(now);
+            osc.stop(now + 0.75);
+          } else if (type === 'terpene') {
+            // Sparkling crystalline arpeggio (C6, E6, G6)
+            [1046.5, 1318.5, 1567.98].forEach((f, idx) => {
+              const osc = ctx.createOscillator();
+              const noteGain = ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(f, now + idx * 0.05);
+              noteGain.gain.setValueAtTime(0.06, now + idx * 0.05);
+              noteGain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.05 + 0.3);
+              osc.connect(noteGain);
+              noteGain.connect(sfxGain);
+              osc.start(now + idx * 0.05);
+              osc.stop(now + idx * 0.05 + 0.35);
+            });
+          } else if (type === 'pheromone') {
+            // Warm bio-vibrato pulse
+            const osc = ctx.createOscillator();
+            const vibrato = ctx.createOscillator();
+            const vibGain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(329.63, now); // E4
+            vibrato.frequency.setValueAtTime(5.5, now); // 5.5 Hz vibrato
+            vibGain.gain.setValueAtTime(12, now);
+            vibrato.connect(vibGain);
+            vibGain.connect(osc.frequency);
+            vibrato.start(now);
+            molGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
+            osc.connect(molGain);
+            osc.start(now);
+            osc.stop(now + 0.7);
+            vibrato.stop(now + 0.7);
+          } else {
+            // Asphalt: snappy tech filter click
+            const osc = ctx.createOscillator();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(440, now);
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(1200, now);
+            molGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+            osc.connect(filter);
+            filter.connect(molGain);
+            osc.start(now);
+            osc.stop(now + 0.25);
+          }
+        } catch(e) {}
+      }
+
+      // Unlock audio on first user touch/click
+      document.addEventListener('click', () => initContext(), { once: true });
+
+      return {
+        init: initContext,
+        toggleBGM,
+        toggleSFX,
+        playHoverSound,
+        playHudClickSound,
+        playNodeClickSound,
+        playPhaseSound,
+        playMoleculeSound
+      };
+    })();
 
     // Window load and resize handlers
     window.addEventListener('DOMContentLoaded', () => {
