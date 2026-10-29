@@ -145,6 +145,48 @@
     .bgm-playing span:nth-child(1) { animation: eqBar 0.75s ease-in-out infinite; }
     .bgm-playing span:nth-child(2) { animation: eqBar 0.52s ease-in-out infinite 0.15s; }
     .bgm-playing span:nth-child(3) { animation: eqBar 0.88s ease-in-out infinite 0.3s; }
+
+    /* Canine Micro-Scene Animations */
+    @keyframes dogSniffNose {
+      0%, 100% { transform: translate(0, 0); }
+      30% { transform: translate(2px, -2px); }
+      60% { transform: translate(-1px, 2px); }
+    }
+    @keyframes dogTailWag {
+      0%, 100% { transform: rotate(-16deg); }
+      50% { transform: rotate(16deg); }
+    }
+    @keyframes dogTailWagFast {
+      0%, 100% { transform: rotate(-26deg); }
+      50% { transform: rotate(26deg); }
+    }
+    @keyframes dogEarPerk {
+      0%, 75%, 100% { transform: rotate(0deg); }
+      80% { transform: rotate(-10deg); }
+      90% { transform: rotate(6deg); }
+    }
+    @keyframes scentWaveRipples {
+      0% { r: 3; opacity: 0.9; stroke-width: 2; }
+      100% { r: 24; opacity: 0; stroke-width: 0.5; }
+    }
+    @keyframes dustMoteFloat {
+      0% { transform: translate(0, 0) scale(0.6); opacity: 0; }
+      35% { opacity: 0.95; }
+      100% { transform: translate(-22px, -28px) scale(1.3); opacity: 0; }
+    }
+    @keyframes calmingArcFlow {
+      0% { stroke-dashoffset: 60; opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { stroke-dashoffset: 0; opacity: 0.3; }
+    }
+    @keyframes sunlightBeam {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.45; }
+    }
+    @keyframes leafDrift {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50% { transform: translateY(-5px) rotate(6deg); }
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased selection:bg-amber-500/30 selection:text-amber-300 tech-grid-bg relative min-h-screen overflow-x-hidden">
@@ -480,17 +522,216 @@
               </div>
             </div>
 
-            <!-- Mini Radar / Compass Widget -->
-            <div class="glass-panel p-4 rounded-2xl border border-white/10 flex items-center space-x-4">
-              <div class="relative w-16 h-16 rounded-full border border-slate-700 bg-slate-900/80 flex items-center justify-center overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-emerald-500/20 to-transparent animate-radar-spin origin-bottom-right"></div>
-                <div class="w-8 h-8 rounded-full border border-dashed border-emerald-400/40"></div>
-                <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+            <!-- Canine Behavioral Cinema Stage -->
+            <div class="glass-panel p-4 rounded-2xl border border-white/10 relative overflow-hidden shadow-xl">
+              <!-- Top Header -->
+              <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/5 font-mono text-[11px]">
+                <div class="flex items-center space-x-2">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                  <span class="text-slate-200 font-bold tracking-wider">CANINE SCENE ANIMATION</span>
+                </div>
+                <span id="scene-cinema-badge" class="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-350 text-[10px] font-bold">
+                  PHASE 01: 玄關氣味校準
+                </span>
               </div>
-              <div class="font-mono text-xs">
-                <div class="text-slate-400 text-[10px]">散步模式 (MODE)</div>
-                <div id="telemetry-walk-mode" class="text-white font-bold">ARC WALKING (弧形減壓)</div>
-                <div class="text-[10px] text-emerald-400">安定訊號已觸發 • 社會化同步中</div>
+
+              <!-- Animated Viewport (140px Height) -->
+              <div class="relative w-full h-[140px] rounded-xl bg-slate-900/90 border border-slate-800 overflow-hidden">
+                
+                <!-- SCENE 01: 玄關校準動畫 (Sensory Awakening) -->
+                <div id="scene-anim-1" class="dog-scene-stage absolute inset-0 flex items-center justify-center transition-opacity duration-500 opacity-100 z-10">
+                  <svg viewBox="0 0 260 140" class="w-full h-full">
+                    <!-- Morning Sunbeam from Doorway -->
+                    <polygon points="0,0 90,0 160,140 0,140" fill="#f59e0b" opacity="0.18" style="animation: sunlightBeam 4s ease-in-out infinite;" />
+                    <line x1="85" y1="0" x2="85" y2="140" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.4" />
+                    <text x="12" y="20" fill="#94a3b8" font-family="'JetBrains Mono', monospace" font-size="9">DOORWAY // PORCH 01</text>
+                    
+                    <!-- Porch Wood Planks -->
+                    <line x1="0" y1="120" x2="260" y2="120" stroke="#334155" stroke-width="2" />
+                    
+                    <!-- Floating Dust Motes & Scent Particles entering nose -->
+                    <circle cx="165" cy="85" r="2.5" fill="#f59e0b" style="animation: dustMoteFloat 2.2s infinite ease-out;" />
+                    <circle cx="175" cy="95" r="3" fill="#fbbf24" style="animation: dustMoteFloat 1.8s infinite ease-out 0.4s;" />
+                    <circle cx="155" cy="100" r="2" fill="#fef08a" style="animation: dustMoteFloat 2.5s infinite ease-out 0.8s;" />
+                    
+                    <!-- Golden Retriever Character -->
+                    <g transform="translate(65, 45)">
+                      <!-- Tail Wagging -->
+                      <path d="M 12 55 Q 0 45, -8 40" fill="none" stroke="#d97706" stroke-width="6" stroke-linecap="round" style="transform-origin: 12px 55px; animation: dogTailWag 1.2s ease-in-out infinite;" />
+                      <!-- Dog Body Sitting -->
+                      <ellipse cx="36" cy="56" rx="28" ry="18" fill="#f59e0b" />
+                      <!-- Dog Chest / Front Leg -->
+                      <rect x="48" y="52" width="10" height="24" rx="5" fill="#d97706" />
+                      <!-- Collar & Glowing Harness -->
+                      <path d="M 50 48 Q 58 56, 62 48" fill="none" stroke="#06b6d4" stroke-width="3.5" />
+                      <!-- Dog Head with Sniffing Animation -->
+                      <g style="transform-origin: 52px 42px; animation: dogSniffNose 1.4s ease-in-out infinite;">
+                        <!-- Ears (Floppy with subtle flick) -->
+                        <path d="M 44 32 Q 40 48, 48 52" fill="#b45309" style="transform-origin: 44px 32px; animation: dogEarPerk 3s infinite;" />
+                        <!-- Head base -->
+                        <circle cx="58" cy="38" r="14" fill="#fbbf24" />
+                        <!-- Snout -->
+                        <path d="M 66 36 L 82 44 L 66 48 Z" fill="#f59e0b" />
+                        <!-- Black Nose Tip -->
+                        <ellipse cx="81" cy="44" rx="3.5" ry="3" fill="#0f172a" />
+                        <circle cx="82" cy="43" r="1" fill="#ffffff" />
+                        <!-- Happy gentle eye -->
+                        <path d="M 58 36 Q 62 34, 64 37" fill="none" stroke="#451a03" stroke-width="2" stroke-linecap="round" />
+                        <!-- Sniffing Intake Ripples -->
+                        <circle cx="83" cy="44" r="5" fill="none" stroke="#f59e0b" style="animation: scentWaveRipples 1.4s infinite ease-out;" />
+                        <circle cx="83" cy="44" r="5" fill="none" stroke="#fbbf24" style="animation: scentWaveRipples 1.4s infinite ease-out 0.5s;" />
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+
+                <!-- SCENE 02: 城市脫敏嗅探動畫 (Urban Decompression) -->
+                <div id="scene-anim-2" class="dog-scene-stage absolute inset-0 flex items-center justify-center transition-opacity duration-500 opacity-0 z-0 pointer-events-none">
+                  <svg viewBox="0 0 260 140" class="w-full h-full">
+                    <!-- Distant Urban Bokeh Circles -->
+                    <circle cx="40" cy="30" r="14" fill="#38bdf8" opacity="0.1" />
+                    <circle cx="95" cy="20" r="22" fill="#818cf8" opacity="0.08" />
+                    <circle cx="210" cy="25" r="16" fill="#f59e0b" opacity="0.12" />
+                    <text x="12" y="20" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="9">URBAN CURB // 4.8 Hz SNIFF</text>
+                    
+                    <!-- Asphalt Ground & Curb -->
+                    <rect x="0" y="115" width="260" height="25" fill="#1e293b" />
+                    <line x1="0" y1="115" x2="260" y2="115" stroke="#475569" stroke-width="2" />
+                    
+                    <!-- Street Lamppost / Hydrant on the Right -->
+                    <g transform="translate(195, 55)">
+                      <rect x="8" y="0" width="8" height="60" fill="#334155" />
+                      <rect x="4" y="30" width="16" height="30" rx="3" fill="#e11d48" opacity="0.85" />
+                      <circle cx="12" cy="30" r="5" fill="#f43f5e" />
+                      <!-- Pheromone Scent Ripples from Hydrant Base -->
+                      <circle cx="12" cy="55" r="6" fill="none" stroke="#06b6d4" style="animation: scentWaveRipples 1.2s infinite ease-out;" />
+                      <circle cx="12" cy="55" r="6" fill="none" stroke="#38bdf8" style="animation: scentWaveRipples 1.2s infinite ease-out 0.4s;" />
+                    </g>
+
+                    <!-- Dog Sniffing the Hydrant Base -->
+                    <g transform="translate(70, 50)">
+                      <!-- Tail Low & Calm -->
+                      <path d="M 10 52 Q -2 46, -10 54" fill="none" stroke="#d97706" stroke-width="5" stroke-linecap="round" style="transform-origin: 10px 52px; animation: dogTailWag 1.8s ease-in-out infinite;" />
+                      <!-- Body in stretch sniff posture -->
+                      <ellipse cx="45" cy="52" rx="32" ry="16" fill="#f59e0b" />
+                      <rect x="25" y="52" width="8" height="20" rx="4" fill="#d97706" />
+                      <rect x="68" y="52" width="8" height="20" rx="4" fill="#d97706" />
+                      <!-- Head Low to Ground -->
+                      <g style="transform-origin: 65px 45px; animation: dogSniffNose 1.0s ease-in-out infinite;">
+                        <circle cx="75" cy="46" r="13" fill="#fbbf24" />
+                        <path d="M 80 44 L 102 55 L 80 58 Z" fill="#f59e0b" />
+                        <ellipse cx="102" cy="55" rx="3.5" ry="3" fill="#0f172a" />
+                        <!-- Alert Ear listening to city -->
+                        <path d="M 66 36 L 60 22 L 74 34 Z" fill="#b45309" style="transform-origin: 66px 36px; animation: dogEarPerk 2.4s infinite;" />
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+
+                <!-- SCENE 03: 植物叢林深度嗅探 (Botanical Olfactory Matrix) -->
+                <div id="scene-anim-3" class="dog-scene-stage absolute inset-0 flex items-center justify-center transition-opacity duration-500 opacity-0 z-0 pointer-events-none">
+                  <svg viewBox="0 0 260 140" class="w-full h-full">
+                    <!-- Sunbeams in forest -->
+                    <polygon points="40,0 120,0 180,140 100,140" fill="#10b981" opacity="0.12" style="animation: sunlightBeam 3s ease-in-out infinite;" />
+                    <text x="12" y="20" fill="#10b981" font-family="'JetBrains Mono', monospace" font-size="9">BOTANICAL TRAIL // GEOSMIN FLOW</text>
+                    
+                    <!-- Soil Ground with Clover & Leaves -->
+                    <rect x="0" y="110" width="260" height="30" fill="#14281d" />
+                    <!-- Clovers -->
+                    <g transform="translate(150, 102)" style="animation: leafDrift 3s ease-in-out infinite;">
+                      <circle cx="0" cy="0" r="5" fill="#10b981" />
+                      <circle cx="7" cy="0" r="5" fill="#34d399" />
+                      <circle cx="3.5" cy="-6" r="5" fill="#059669" />
+                      <path d="M 3.5 0 L 3.5 12" stroke="#059669" stroke-width="2" />
+                    </g>
+                    <g transform="translate(185, 105)" style="animation: leafDrift 3.5s ease-in-out infinite 0.5s;">
+                      <!-- Fallen Oak Leaf -->
+                      <path d="M 0 0 Q 10 -6, 20 0 Q 10 8, 0 0" fill="#f59e0b" />
+                    </g>
+
+                    <!-- Swirling Scent Vortex -->
+                    <g transform="translate(150, 85)">
+                      <circle cx="0" cy="0" r="8" fill="none" stroke="#10b981" stroke-dasharray="4 4" style="animation: scentWaveRipples 1.5s infinite linear;" />
+                      <circle cx="0" cy="0" r="14" fill="none" stroke="#fbbf24" stroke-dasharray="6 4" style="animation: scentWaveRipples 1.8s infinite linear 0.4s;" />
+                      <!-- Pollen motes floating -->
+                      <circle cx="5" cy="-10" r="2.5" fill="#fef08a" style="animation: dustMoteFloat 2s infinite ease-out;" />
+                      <circle cx="-10" cy="-5" r="2" fill="#6ee7b7" style="animation: dustMoteFloat 2.4s infinite ease-out 0.6s;" />
+                    </g>
+
+                    <!-- Golden Retriever Snout Deep in Grass -->
+                    <g transform="translate(55, 46)">
+                      <!-- Tail Wagging Excitedly -->
+                      <path d="M 8 50 Q -4 35, 4 20" fill="none" stroke="#d97706" stroke-width="6" stroke-linecap="round" style="transform-origin: 8px 50px; animation: dogTailWagFast 0.7s ease-in-out infinite;" />
+                      <!-- Happy Body -->
+                      <ellipse cx="40" cy="50" rx="28" ry="17" fill="#f59e0b" />
+                      <rect x="18" y="50" width="8" height="22" rx="4" fill="#d97706" />
+                      <rect x="58" y="50" width="8" height="22" rx="4" fill="#d97706" />
+                      <!-- Head Burrowed Down with Joyful Eye -->
+                      <g style="transform-origin: 62px 42px; animation: dogSniffNose 0.8s ease-in-out infinite;">
+                        <circle cx="70" cy="48" r="13" fill="#fbbf24" />
+                        <path d="M 72 45 L 94 62 L 74 65 Z" fill="#f59e0b" />
+                        <ellipse cx="94" cy="62" rx="3.5" ry="3" fill="#0f172a" />
+                        <!-- Happy Squint Eye -->
+                        <path d="M 68 44 Q 72 40, 76 45" fill="none" stroke="#78350f" stroke-width="2" stroke-linecap="round" />
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+
+                <!-- SCENE 04: 雙犬平行社交弧線 (Social Synchronization) -->
+                <div id="scene-anim-4" class="dog-scene-stage absolute inset-0 flex items-center justify-center transition-opacity duration-500 opacity-0 z-0 pointer-events-none">
+                  <svg viewBox="0 0 260 140" class="w-full h-full">
+                    <!-- Parallel Arc Trajectory Tracks -->
+                    <path d="M 10 115 Q 130 90, 250 115" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="5 5" opacity="0.4" />
+                    <path d="M 10 85 Q 130 65, 250 85" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.3" />
+                    <text x="12" y="20" fill="#06b6d4" font-family="'JetBrains Mono', monospace" font-size="9">ARC WALKING // CALMING SIGNALS</text>
+                    
+                    <!-- Calming Signal Arc Wave Connecting Both Dogs -->
+                    <path d="M 115 65 Q 140 45, 165 65" fill="none" stroke="#10b981" stroke-width="2.5" stroke-dasharray="6 4" style="animation: calmingArcFlow 2s infinite linear;" />
+                    <circle cx="140" cy="52" r="4" fill="#34d399" opacity="0.7" style="animation: sunlightBeam 1.5s infinite ease-in-out;" />
+
+                    <!-- Dog 1: Golden Retriever (Left) -->
+                    <g transform="translate(45, 42)">
+                      <!-- Gentle Tail Wag -->
+                      <path d="M 5 45 Q -5 38, -12 42" fill="none" stroke="#d97706" stroke-width="5" stroke-linecap="round" style="transform-origin: 5px 45px; animation: dogTailWag 1.3s ease-in-out infinite;" />
+                      <ellipse cx="30" cy="45" rx="22" ry="14" fill="#f59e0b" />
+                      <rect x="14" y="45" width="6" height="18" rx="3" fill="#d97706" />
+                      <rect x="42" y="45" width="6" height="18" rx="3" fill="#d97706" />
+                      <!-- Head turned slightly towards companion with calm soft eyes -->
+                      <circle cx="50" cy="36" r="11" fill="#fbbf24" />
+                      <path d="M 54 35 L 68 40 L 54 44 Z" fill="#f59e0b" />
+                      <ellipse cx="68" cy="40" rx="2.5" ry="2" fill="#0f172a" />
+                      <!-- Soft calming eye -->
+                      <path d="M 48 34 Q 52 32, 54 35" fill="none" stroke="#451a03" stroke-width="1.8" />
+                    </g>
+
+                    <!-- Dog 2: Border Collie (Right, parallel walking) -->
+                    <g transform="translate(150, 42)">
+                      <!-- Fluffy Collie Tail Wagging -->
+                      <path d="M 50 42 Q 62 35, 68 40" fill="none" stroke="#f8fafc" stroke-width="6" stroke-linecap="round" style="transform-origin: 50px 42px; animation: dogTailWag 1.3s ease-in-out infinite 0.2s;" />
+                      <!-- Black & White Body -->
+                      <ellipse cx="32" cy="44" rx="22" ry="14" fill="#1e293b" />
+                      <!-- White Chest Ruff -->
+                      <path d="M 16 38 Q 24 50, 20 54 Q 10 52, 16 38" fill="#f8fafc" />
+                      <rect x="18" y="44" width="6" height="18" rx="3" fill="#f8fafc" />
+                      <rect x="42" y="44" width="6" height="18" rx="3" fill="#1e293b" />
+                      <!-- Border Collie Head -->
+                      <circle cx="16" cy="34" r="10" fill="#1e293b" />
+                      <path d="M 14 34 L 2 38 L 14 42 Z" fill="#f8fafc" />
+                      <ellipse cx="2" cy="38" rx="2.5" ry="2" fill="#0f172a" />
+                      <!-- Pricked Collie Ears -->
+                      <path d="M 14 26 L 10 16 L 18 24 Z" fill="#0f172a" />
+                      <path d="M 20 28 L 24 18 L 26 26 Z" fill="#f8fafc" />
+                    </g>
+                  </svg>
+                </div>
+
+              </div>
+
+              <!-- Scene Action Caption Bar -->
+              <div class="mt-2 text-[10px] font-mono text-slate-400 flex items-center justify-between">
+                <span id="scene-action-text" class="text-emerald-400">● 居家安全感校準：心流平靜嗅探中</span>
+                <span class="text-slate-500">50mm KINEMATICS</span>
               </div>
             </div>
 
@@ -564,12 +805,28 @@
                   filter="url(#neon-glow)"
                 />
 
-                <!-- 3. Animated Scent Tracer Particle (Slides with scroll progress) -->
-                <g id="path-tracer-group" transform="translate(150, 40)">
-                  <!-- Outer ripple wave -->
-                  <circle r="18" fill="none" stroke="#f59e0b" stroke-width="1.5" class="animate-ping opacity-60" />
-                  <circle r="10" fill="#f59e0b" opacity="0.4" />
-                  <circle r="6" fill="#ffffff" filter="url(#neon-glow)" />
+                <!-- 3. Animated Scent Tracer: Canine Explorer Sniffing Avatar -->
+                <g id="path-tracer-group" transform="translate(150, 40)" class="cursor-pointer">
+                  <!-- Forward Concentric Sniff Waves -->
+                  <circle cx="16" cy="0" r="14" fill="none" stroke="#f59e0b" stroke-width="1.5" opacity="0.4" class="animate-ping" />
+                  <circle cx="12" cy="0" r="8" fill="none" stroke="#fbbf24" stroke-width="1" opacity="0.6" />
+                  
+                  <!-- Glowing Outer Halo -->
+                  <circle cx="0" cy="0" r="14" fill="#f59e0b" opacity="0.25" filter="url(#neon-glow)" />
+                  
+                  <!-- Stylized Dog Head & Snout (Facing +X direction along tangent vector) -->
+                  <!-- Head Base -->
+                  <circle cx="-2" cy="0" r="9" fill="#f59e0b" stroke="#ffffff" stroke-width="1.2" />
+                  <!-- Floppy Ears -->
+                  <path d="M -6 -5 Q -12 -10, -5 -10" fill="#d97706" />
+                  <path d="M -6 5 Q -12 10, -5 10" fill="#d97706" />
+                  <!-- Snout Pointing Forward -->
+                  <path d="M 3 -3.5 L 11 0 L 3 3.5 Z" fill="#fbbf24" />
+                  <!-- Glowing Black Nose Tip -->
+                  <circle cx="11" cy="0" r="2.2" fill="#0f172a" />
+                  <circle cx="11.5" cy="-0.5" r="0.7" fill="#ffffff" />
+                  <!-- Center Paw Mark -->
+                  <circle cx="-2" cy="0" r="2.5" fill="#ffffff" />
                 </g>
 
                 <!-- 4. Interactive Phase Nodes (Clickable & Hover-responsive) -->
@@ -1098,11 +1355,14 @@
             scentPath.style.strokeDashoffset = drawOffset;
           }
 
-          // 3. Move Tracer Particle along SVG curve
+          // 3. Move Tracer Avatar along SVG curve & orient tangent forward
           if (scentPath && pathTracer) {
             const currentDist = progress * pathLength;
             const point = scentPath.getPointAtLength(currentDist);
-            pathTracer.setAttribute("transform", `translate(${point.x}, ${point.y})`);
+            const pAhead = scentPath.getPointAtLength(Math.min(pathLength, currentDist + 3));
+            const angleRad = Math.atan2(pAhead.y - point.y, pAhead.x - point.x);
+            const angleDeg = angleRad * (180 / Math.PI);
+            pathTracer.setAttribute("transform", `translate(${point.x}, ${point.y}) rotate(${angleDeg})`);
           }
 
           // 4. Determine Active Phase based on progress ranges
@@ -1172,6 +1432,36 @@
         }
       }
 
+      // Update Canine Scene Viewport Animations
+      const sceneMeta = [
+        { badge: "PHASE 01: 玄關氣味校準", action: "● 居家安全感校準：心流平靜嗅探中" },
+        { badge: "PHASE 02: 城市鋪面脫敏", action: "● 4.8Hz 自主嗅探：聽視覺噪音過濾中" },
+        { badge: "PHASE 03: 氣味叢林心流", action: "● 深入草地土壤：土臭素神經活化 95%" },
+        { badge: "PHASE 04: 平行弧線社交", action: "● 安定訊號傳遞：非壓迫平行散步中" }
+      ];
+
+      for (let s = 1; s <= 4; s++) {
+        const scene = document.getElementById(`scene-anim-${s}`);
+        if (scene) {
+          if (s === phaseIndex) {
+            scene.classList.remove('opacity-0', 'z-0', 'pointer-events-none');
+            scene.classList.add('opacity-100', 'z-10');
+          } else {
+            scene.classList.remove('opacity-100', 'z-10');
+            scene.classList.add('opacity-0', 'z-0', 'pointer-events-none');
+          }
+        }
+      }
+
+      const badgeElem = document.getElementById('scene-cinema-badge');
+      const actionElem = document.getElementById('scene-action-text');
+      if (badgeElem && sceneMeta[phaseIndex - 1]) {
+        badgeElem.textContent = sceneMeta[phaseIndex - 1].badge;
+      }
+      if (actionElem && sceneMeta[phaseIndex - 1]) {
+        actionElem.textContent = sceneMeta[phaseIndex - 1].action;
+      }
+
       // Update Telemetry Data
       const data = phaseTelemetryData[phaseIndex - 1];
       if (data) {
@@ -1186,7 +1476,7 @@
 
         if (telemChemical) {
           telemChemical.innerHTML = data.chemicals.map(chem => `
-            <span class="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300">${chem}</span>
+            <span class="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-350">${chem}</span>
           `).join('');
         }
       }
